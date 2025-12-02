@@ -1,7 +1,7 @@
 <nav class="navbar">
     <div class="navbar-left">
         <a href="{% url 'app:home' %}" class="navbar-btn">/</a>
-        <a href="#" class="navbar-btn">/blog</a>
+        <a href="{% url 'app:blog_list' %}" class="navbar-btn">/blog</a>
         <a href="#" class="navbar-btn">/projects</a>
     </div>
     <div class="navbar-right">
@@ -18,4 +18,3 @@
         </div>
     </div>
 </nav>
-

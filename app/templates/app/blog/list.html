@@ -1,0 +1,64 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Blog{% endblock %}
+
+{% block content %}
+<div class="blog-page">
+    <div class="section">
+        <div class="blog-header">
+            <h1>Blog</h1>
+            {% if user.is_authenticated %}
+            <a href="{% url 'app:blog_new' %}" class="btn-link">
+                New Post +
+            </a>
+            {% endif %}
+        </div>
+
+        {% if posts %}
+        <div class="posts-list">
+            {% for post in posts %}
+            <article class="post-card">
+                {% if post.cover_image %}
+                <div class="post-cover">
+                    <img src="{{ post.cover_image.url }}" alt="{{ post.title }}">
+                </div>
+                {% endif %}
+                <div class="post-content">
+                    <h2><a href="{% url 'app:blog_detail' post.slug %}">{{ post.title }}</a></h2>
+                    {% if post.excerpt %}
+                    <p class="excerpt">{{ post.excerpt }}</p>
+                    {% endif %}
+                    <div class="post-meta">
+                        <span class="author">{{ post.author.username }}</span>
+                        <span class="date">{{ post.published_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        {% if posts.has_other_pages %}
+        <div class="pagination">
+            {% if posts.has_previous %}
+            <a href="?page={{ posts.previous_page_number }}" class="btn-link">← Previous</a>
+            {% endif %}
+            <span class="page-info">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>
+            {% if posts.has_next %}
+            <a href="?page={{ posts.next_page_number }}" class="btn-link">Next →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            <p>No posts yet.</p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'app:blog_new' %}" class="btn-link">Write your first post</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,55 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}My Posts{% endblock %}
+
+{% block content %}
+<div class="blog-page">
+    <div class="section">
+        <div class="blog-header">
+            <h1>My Posts</h1>
+            <a href="{% url 'app:blog_new' %}" class="btn-link">
+                New Post +
+            </a>
+        </div>
+
+        {% if posts %}
+        <div class="posts-list drafts-list">
+            {% for post in posts %}
+            <article class="post-card">
+                <div class="post-content">
+                    <h2>
+                        <a href="{% url 'app:blog_edit' post.slug %}">{{ post.title }}</a>
+                        {% if post.status == 'draft' %}
+                        <span class="badge draft">Draft</span>
+                        {% else %}
+                        <span class="badge published">Published</span>
+                        {% endif %}
+                    </h2>
+                    {% if post.excerpt %}
+                    <p class="excerpt">{{ post.excerpt }}</p>
+                    {% endif %}
+                    <div class="post-meta">
+                        <span class="date">Created: {{ post.created_at|date:"M d, Y" }}</span>
+                        <span class="date">Updated: {{ post.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="post-actions">
+                        <a href="{% url 'app:blog_edit' post.slug %}" class="btn-link btn-small">Edit</a>
+                        {% if post.is_published %}
+                        <a href="{% url 'app:blog_detail' post.slug %}" class="btn-link btn-small btn-secondary">View</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>You haven't written any posts yet.</p>
+            <a href="{% url 'app:blog_new' %}" class="btn-link">Write your first post</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

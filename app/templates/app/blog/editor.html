@@ -1,0 +1,192 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}{% if post %}Edit: {{ post.title }}{% else %}New Post{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'app/css/editor.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="editor-page">
+    <div class="editor-header">
+        <div class="editor-actions-left">
+            <a href="{% url 'app:blog_drafts' %}" class="btn-link btn-secondary">← Back</a>
+        </div>
+        <div class="editor-actions-right">
+            {% if post and post.status == 'published' %}
+            <button type="button" id="unpublish" class="btn-link btn-danger">Unpublish</button>
+            <button type="button" id="save" class="btn-link">Save</button>
+            {% else %}
+            <button type="button" id="save-draft" class="btn-link btn-secondary">Save Draft</button>
+            <button type="button" id="publish" class="btn-link">Publish</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="editor-container">
+        <input 
+            type="text" 
+            id="post-title" 
+            class="title-input" 
+            placeholder="Post title..."
+            value="{{ post.title|default:'' }}"
+        >
+        
+        <input 
+            type="text" 
+            id="post-excerpt" 
+            class="excerpt-input" 
+            placeholder="Short excerpt (optional)..."
+            value="{{ post.excerpt|default:'' }}"
+        >
+
+        <div id="editorjs"></div>
+    </div>
+
+    <div id="save-status" class="save-status"></div>
+</div>
+
+<!-- Editor.js -->
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2/dist/editorjs.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.8.1/dist/header.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1.9.0/dist/list.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@2.9.0/dist/code.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@2.6.0/dist/quote.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@1.4.0/dist/delimiter.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/inline-code@1.5.0/dist/inline-code.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/marker@1.4.0/dist/marker.umd.min.js"></script>
+
+<script>
+    let postSlug = "{{ post.slug|default:'' }}";
+    let isPublished = {{ post.is_published|yesno:"true,false,false" }};
+    const csrfToken = "{{ csrf_token }}";
+    const existingContent = {{ post.content|safe|default:"{}" }};
+    
+    // Initialize Editor.js
+    const editor = new EditorJS({
+        holder: 'editorjs',
+        placeholder: 'Start writing your post...',
+        data: existingContent.blocks ? existingContent : undefined,
+        tools: {
+            header: {
+                class: Header,
+                config: {
+                    levels: [2, 3, 4],
+                    defaultLevel: 2
+                }
+            },
+            list: {
+                class: List,
+                inlineToolbar: true
+            },
+            code: CodeTool,
+            quote: {
+                class: Quote,
+                inlineToolbar: true
+            },
+            delimiter: Delimiter,
+            inlineCode: InlineCode,
+            marker: Marker,
+        }
+    });
+
+    const statusEl = document.getElementById('save-status');
+    
+    function showStatus(message, isError = false) {
+        statusEl.textContent = message;
+        statusEl.className = 'save-status ' + (isError ? 'error' : 'success');
+        statusEl.style.opacity = 1;
+        setTimeout(() => {
+            statusEl.style.opacity = 0;
+        }, 3000);
+    }
+
+    async function savePost(status = null) {
+        const title = document.getElementById('post-title').value.trim();
+        const excerpt = document.getElementById('post-excerpt').value.trim();
+        
+        if (!title) {
+            showStatus('Please enter a title', true);
+            return;
+        }
+
+        const content = await editor.save();
+        
+        const saveUrl = postSlug 
+            ? `/blog/save/${postSlug}/` 
+            : '/blog/save/';
+        
+        const body = { title, excerpt, content };
+        if (status) {
+            body.status = status;
+        }
+        
+        const response = await fetch(saveUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update local state
+            postSlug = data.slug;
+            isPublished = data.status === 'published';
+            
+            // Show appropriate message
+            if (status === 'published') {
+                showStatus('Published!');
+                setTimeout(() => {
+                    window.location.href = `/blog/${data.slug}/`;
+                }, 1000);
+            } else if (status === 'draft') {
+                showStatus('Unpublished - now a draft');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showStatus('Saved!');
+            }
+            
+            // Update URL if this was a new post
+            if (data.slug && !window.location.pathname.includes(data.slug)) {
+                window.history.replaceState({}, '', `/blog/edit/${data.slug}/`);
+            }
+        } else {
+            showStatus(data.error || 'Error saving', true);
+        }
+    }
+
+    // Event listeners based on current state
+    const saveDraftBtn = document.getElementById('save-draft');
+    const publishBtn = document.getElementById('publish');
+    const unpublishBtn = document.getElementById('unpublish');
+    const saveBtn = document.getElementById('save');
+
+    if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', () => savePost('draft'));
+    }
+    if (publishBtn) {
+        publishBtn.addEventListener('click', () => savePost('published'));
+    }
+    if (unpublishBtn) {
+        unpublishBtn.addEventListener('click', () => savePost('draft'));
+    }
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => savePost(null)); // Keep current status
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            savePost(null); // Save without changing status
+        }
+    });
+</script>
+{% endblock %}

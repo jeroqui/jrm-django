@@ -1,0 +1,73 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <div class="dashboard-header">
+            <h1>Dashboard</h1>
+            <a href="{% url 'app:logout' %}" class="btn-link btn-secondary">Logout</a>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Blog Posts Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2>Blog Posts</h2>
+                    <a href="{% url 'app:blog_new' %}" class="btn-link">+ New Post</a>
+                </div>
+                
+                <div class="card-stats">
+                    <div class="stat">
+                        <span class="stat-value">{{ total_posts }}</span>
+                        <span class="stat-label">Total</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">{{ published_count }}</span>
+                        <span class="stat-label">Published</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">{{ draft_count }}</span>
+                        <span class="stat-label">Drafts</span>
+                    </div>
+                </div>
+
+                {% if posts %}
+                <div class="card-list">
+                    {% for post in posts %}
+                    <a href="{% url 'app:blog_edit' post.slug %}" class="card-list-item">
+                        <span class="item-title">{{ post.title }}</span>
+                        <span class="item-meta">
+                            {% if post.status == 'draft' %}
+                            <span class="badge draft">Draft</span>
+                            {% else %}
+                            <span class="badge published">Published</span>
+                            {% endif %}
+                        </span>
+                    </a>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'app:blog_drafts' %}" class="card-link">View all posts →</a>
+                {% else %}
+                <div class="card-empty">
+                    <p>No posts yet</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- More utility cards can be added here -->
+            <div class="dashboard-card placeholder-card">
+                <div class="card-header">
+                    <h2>Projects</h2>
+                </div>
+                <div class="card-empty">
+                    <p>Coming soon...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

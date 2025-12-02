@@ -1,0 +1,311 @@
+@use "../variables" as vars;
+
+// Blog list page
+.blog-page {
+  min-height: 80vh;
+
+  .blog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+  }
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.post-card {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(vars.$bg-color-light, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(white, 0.1);
+  transition: border-color vars.$hover-time ease;
+
+  &:hover {
+    border-color: vars.$primary-color;
+  }
+
+  .post-cover {
+    flex-shrink: 0;
+    width: 200px;
+    height: 140px;
+    overflow: hidden;
+    border-radius: 4px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .post-content {
+    flex: 1;
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+
+      a {
+        color: vars.$text-color;
+        font-weight: normal;
+
+        &:hover {
+          color: vars.$primary-color;
+        }
+      }
+    }
+
+    .excerpt {
+      opacity: 0.8;
+      margin-bottom: 1rem;
+      padding-left: 0;
+    }
+  }
+
+  .post-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    opacity: 0.6;
+  }
+
+  .post-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+
+  &.draft {
+    background: rgba(255, 166, 0, 0.3);
+    color: vars.$primary-color;
+  }
+
+  &.published {
+    background: rgba(100, 200, 100, 0.3);
+    color: #7f7;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 3rem;
+
+  .page-info {
+    opacity: 0.6;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  opacity: 0.7;
+
+  p {
+    margin-bottom: 1.5rem;
+    padding-left: 0;
+  }
+}
+
+// Blog post detail
+.blog-post {
+  .post-header {
+    margin-bottom: 2rem;
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    .post-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      margin-bottom: 1rem;
+    }
+
+    .edit-btn {
+      font-size: 0.9rem;
+    }
+  }
+
+  .post-cover-large {
+    margin: 2rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+    }
+  }
+
+  .post-body {
+    font-size: 1.1rem;
+    line-height: 1.8;
+
+    h2,
+    h3,
+    h4 {
+      margin: 2rem 0 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+      padding-left: 0;
+    }
+
+    .content-list {
+      margin: 1rem 0 1.5rem 2rem;
+      list-style: disc;
+
+      li {
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    ol.content-list {
+      list-style: decimal;
+    }
+
+    pre {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+
+      code {
+        font-family: "Red Hat Mono", monospace;
+        font-size: 0.9rem;
+      }
+    }
+
+    blockquote {
+      border-left: 4px solid vars.$primary-color;
+      padding-left: 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      opacity: 0.9;
+
+      cite {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        opacity: 0.7;
+      }
+    }
+
+    figure {
+      margin: 2rem 0;
+
+      img {
+        width: 100%;
+        border-radius: 8px;
+      }
+
+      figcaption {
+        text-align: center;
+        font-size: 0.9rem;
+        opacity: 0.7;
+        margin-top: 0.5rem;
+      }
+    }
+
+    hr {
+      border: none;
+      border-top: 2px dashed rgba(white, 0.2);
+      margin: 3rem 0;
+    }
+  }
+
+  .post-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(white, 0.1);
+  }
+}
+
+// Auth pages
+.auth-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .auth-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+  }
+
+  .error-message {
+    background: rgba(255, 100, 100, 0.2);
+    border: 1px solid rgba(255, 100, 100, 0.5);
+    color: #faa;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .auth-form {
+    .form-group {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(white, 0.2);
+        border-radius: 4px;
+        color: white;
+        font-size: 1rem;
+        font-family: inherit;
+
+        &:focus {
+          outline: none;
+          border-color: vars.$primary-color;
+        }
+      }
+    }
+
+    .btn-full {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+

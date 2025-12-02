@@ -16,15 +16,35 @@ footer {
   }
 }
 
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(white, 0.1);
+}
+
 #copy {
   display: flex;
   align-items: center;
   font-size: 0.8rem;
   opacity: 0.8;
-  margin: 3rem;
 
   * {
     margin: 0.1rem;
+  }
+}
+
+.footer-auth {
+  .bubble {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 

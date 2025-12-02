@@ -1,0 +1,39 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% load editorjs %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<article class="blog-post">
+    <div class="section">
+        <header class="post-header">
+            <h1>{{ post.title }}</h1>
+            <div class="post-meta">
+                <span class="author">By {{ post.author.username }}</span>
+                <span class="date">{{ post.published_at|date:"F d, Y" }}</span>
+                {% if post.status == 'draft' %}
+                <span class="badge draft">Draft</span>
+                {% endif %}
+            </div>
+            {% if user == post.author %}
+            <a href="{% url 'app:blog_edit' post.slug %}" class="btn-link edit-btn">Edit</a>
+            {% endif %}
+        </header>
+
+        {% if post.cover_image %}
+        <div class="post-cover-large">
+            <img src="{{ post.cover_image.url }}" alt="{{ post.title }}">
+        </div>
+        {% endif %}
+
+        <div class="post-body">
+            {{ post.content|render_editorjs }}
+        </div>
+
+        <footer class="post-footer">
+            <a href="{% url 'app:blog_list' %}" class="btn-link">← Back to Blog</a>
+        </footer>
+    </div>
+</article>
+{% endblock %}

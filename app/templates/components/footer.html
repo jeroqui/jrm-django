@@ -63,12 +63,20 @@
             </div>
         </div>
 
-        <div class="center" id="copy">
-            <span>©</span>
-            Jacob Ràfols Morilla
-            <span>•</span>
-            2022
+        <div class="footer-bottom">
+            <div class="center" id="copy">
+                <span>©</span>
+                Jacob Ràfols Morilla
+                <span>•</span>
+                2022
+            </div>
+            <div class="footer-auth">
+                {% if user.is_authenticated %}
+                <a href="{% url 'app:dashboard' %}" class="bubble">Dashboard</a>
+                {% else %}
+                <a href="{% url 'app:login' %}" class="bubble">Login</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </footer>
-
