@@ -1,0 +1,594 @@
+/* ==========================================================================
+   CSS Variables
+   ========================================================================== */
+:root {
+    /* Widths */
+    --container-width: 1200px;
+    
+    /* Colors */
+    --bg-color: rgb(34, 33, 59);
+    --bg-color-light: rgb(61, 57, 138);
+    --primary-color: orange;
+    --text-color: white;
+    --secondary-color: rgb(166, 255, 243);
+    
+    /* Time */
+    --hover-time: 0.4s;
+}
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+html, body, div, span, object, iframe, figure, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, code, em, img, small, strike, strong, sub, sup, tt, b, u, i, ol, ul, li, fieldset, form, label, table, caption, tbody, tfoot, thead, tr, th, td, main, canvas, embed, footer, header, nav, section, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    text-size-adjust: none;
+}
+
+footer, header, nav, section, main {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+input {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+}
+
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
+body {
+    margin: 0;
+    background: linear-gradient(-75deg, var(--bg-color) 0%, var(--bg-color-light) 100%);
+    color: var(--text-color);
+    font-family: 'Red Hat Mono', monospace;
+    box-sizing: border-box;
+    
+    /* dot grid */
+    background-image: radial-gradient(#3f3f3f, 1px, var(--bg-color) 0);
+    background-size: 40px 40px;
+}
+
+.body-wrapper {
+    position: relative;
+    max-width: 2048px;
+    margin: 0 auto;
+}
+
+@media screen and (min-width: 2048px) {
+    .body-wrapper::before,
+    .body-wrapper::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        width: 40px;
+        height: 100%;
+        background: rgb(42, 38, 38);
+        z-index: 10;
+    }
+
+    .body-wrapper::before {
+        left: 0;
+        background: linear-gradient(90deg, rgba(42, 38, 38, 1) 0%, rgba(42, 38, 38, 0) 100%);
+    }
+
+    .body-wrapper::after {
+        right: 0;
+        background: linear-gradient(-90deg, rgba(42, 38, 38, 1) 0%, rgba(42, 38, 38, 0) 100%);
+    }
+}
+
+h1, h2 {
+    font-family: 'Cormorant', serif;
+    font-weight: normal;
+    margin: 0;
+}
+
+h1 {
+    font-size: 4rem;
+}
+
+h2 {
+    font-size: 3.5rem;
+}
+
+a {
+    color: var(--secondary-color);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:not(.btn-link):hover {
+    text-decoration: underline;
+}
+
+.title-font,
+.title {
+    font-family: "Lexend", sans-serif;
+}
+
+.title {
+    font-size: 4rem;
+}
+
+/* ==========================================================================
+   Color Helpers
+   ========================================================================== */
+.color-bg {
+    color: var(--bg-color);
+}
+
+.bg-bg {
+    background-color: var(--bg-color);
+}
+
+.color-bg-light {
+    color: var(--bg-color-light);
+}
+
+.bg-bg-light {
+    background-color: var(--bg-color-light);
+}
+
+.color-primary {
+    color: var(--primary-color);
+}
+
+.bg-primary {
+    background-color: var(--primary-color);
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+.columns {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.columns .column {
+    flex-basis: 300px;
+    flex-grow: 1;
+    margin: .8rem;
+}
+
+.section {
+    max-width: 1000px;
+    margin: 5rem auto;
+    padding: 0 1rem;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-center p {
+    padding-left: 0;
+}
+
+.align-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.align-right > * {
+    margin-right: 5rem;
+}
+
+hr.subtitle {
+    width: 20%;
+    color: var(--text-color);
+    margin: 1rem auto;
+}
+
+@media screen and (max-width: 1200px) {
+    .section {
+        max-width: 800px;
+    }
+
+    .align-right > * {
+        margin-right: unset;
+    }
+}
+
+/* ==========================================================================
+   Navbar
+   ========================================================================== */
+body.home .navbar {
+    position: absolute;
+}
+
+.navbar {
+    display: flex;
+    position: static;
+    width: 100%;
+    z-index: 10;
+    background-color: rgba(34, 33, 59, .8);
+    border-bottom: 1px solid black;
+    padding: .5rem 0;
+    justify-content: space-between;
+}
+
+.navbar .navbar-left {
+    display: flex;
+}
+
+.navbar .navbar-btn {
+    all: unset;
+    cursor: pointer;
+    display: block;
+    background-color: var(--bg-color-light);
+    color: white;
+    padding: .5rem 1rem;
+    margin: 0 .5rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: border var(--hover-time) ease, background-color var(--hover-time) ease;
+}
+
+.navbar .navbar-btn:hover {
+    background-color: transparent;
+    border: 1px solid white;
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   Dropdown
+   ========================================================================== */
+.dropdown-wrapper {
+    position: relative;
+}
+
+.dropdown-wrapper .dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    display: none;
+    flex-direction: column;
+}
+
+.dropdown-wrapper.open .dropdown {
+    display: flex;
+}
+
+.dropdown-wrapper .dropdown > .selected {
+    background-color: var(--bg-color);
+}
+
+/* ==========================================================================
+   Glass Card
+   ========================================================================== */
+.glass-card {
+    border: 1px solid black;
+    border-radius: 8px;
+    background-color: rgba(34, 33, 59, 0.5);
+    backdrop-filter: blur(5px);
+    margin: 1rem;
+    padding: 1rem;
+}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+.hero {
+    position: relative;
+    padding: 20rem 0;
+    z-index: 1;
+}
+
+.hero .header-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* ==========================================================================
+   Button
+   ========================================================================== */
+.btn-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.2em;
+    font-weight: 100;
+    font-family: inherit;
+    margin: .4rem;
+    padding: .5rem 1.5rem;
+    outline: 0px solid rgba(255, 166, 0, 0);
+    border: none;
+    border-radius: .8rem;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background-color var(--hover-time) ease, outline .1s ease;
+}
+
+.btn-link:hover {
+    background-color: rgba(255, 202, 104, 0.849);
+}
+
+.btn-link:focus {
+    outline: 4px solid rgba(255, 166, 0, 0.363);
+}
+
+/* ==========================================================================
+   Pilar
+   ========================================================================== */
+.pilar {
+    position: relative;
+    padding: 1px;
+    z-index: 1;
+}
+
+.pilar .pilar-content {
+    margin: 10rem 0;
+    margin-bottom: 15rem;
+    padding: 0 2rem;
+}
+
+.pilar#coding .bg-decoration {
+    width: 60%;
+    height: 100%;
+    background-color: grey;
+    opacity: .2;
+    transform: skewX(-35deg);
+    transform-origin: top left;
+    z-index: -1;
+}
+
+.pilar .pilar-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100% !important;
+    z-index: -1;
+    width: 100%;
+}
+
+.pilar .pilar-bg img {
+    width: 100%;
+}
+
+.pilar .pilar-bg .center {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Etapa (Timeline)
+   ========================================================================== */
+.etapas {
+    padding: 0 2rem;
+}
+
+.etapa-wrapper {
+    display: flex;
+    margin: 1rem;
+}
+
+.etapa-wrapper:first-of-type .etapa-line {
+    border-radius: 1rem 1rem 0 0;
+}
+
+.etapa-wrapper:last-of-type .etapa-line::after {
+    content: "";
+    position: absolute;
+    bottom: -16px;
+    width: 8px;
+    height: 8px;
+    margin-top: 8px;
+    background-color: var(--bg-color-light);
+}
+
+.etapa-content {
+    padding: .5rem;
+}
+
+.etapa-content .title {
+    font-size: 1.5em;
+    margin-bottom: .5rem;
+}
+
+.etapa-content li {
+    padding-bottom: .3rem;
+}
+
+.etapa-line {
+    position: relative;
+    width: 8px;
+    background-color: var(--bg-color-light);
+    margin-right: 4rem;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+footer {
+    background-image: url("/static/app/imgs/triangles_decoration_footer.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top left;
+    overflow: hidden;
+}
+
+#social-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+#social-links .fill-width {
+    grid-column: span 2;
+}
+
+#copy {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin: 3rem;
+}
+
+#copy * {
+    margin: 0.1rem;
+}
+
+/* ==========================================================================
+   Overlays
+   ========================================================================== */
+.dotted-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0004;
+    background-image: radial-gradient(black 1px, transparent 0);
+    background-size: 40px 40px;
+    background-position: -19px -19px;
+}
+
+.vanish-mask {
+    width: 100%;
+    height: 100%;
+    mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 1) 70%, transparent 100%);
+}
+
+@media screen and (max-width: 600px) {
+    .vanish-mask {
+        mask-image: none;
+        overflow: hidden;
+    }
+}
+
+/* ==========================================================================
+   Bubble Links
+   ========================================================================== */
+.bubble {
+    display: inline-flex;
+    align-items: center;
+    color: var(--secondary-color);
+    border-radius: 1rem;
+    padding: .2rem .5rem;
+    text-decoration: none;
+    background-color: #0004;
+    transition: background-color var(--hover-time) ease;
+}
+
+.bubble:hover {
+    background-color: #0002;
+}
+
+.bubble span {
+    padding: 0 10pt;
+}
+
+/* ==========================================================================
+   Page Specific: Home
+   ========================================================================== */
+.home p {
+    padding-left: 2rem;
+}
+
+/* ==========================================================================
+   Specific Sections
+   ========================================================================== */
+.sidenote {
+    font-size: .8em;
+    opacity: .7;
+}
+
+.sidenote::before {
+    content: '*';
+}
+
+#pilars,
+#objectius {
+    border-top: 2px dashed orange;
+}
+
+.background-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#intro {
+    position: relative;
+    padding: 1px;
+    z-index: 1;
+    height: 50rem;
+}
+
+#intro::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 120%;
+    background-image: url("/static/app/imgs/triangles_decoration_top.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top right;
+    z-index: -1;
+}
+
+.hint {
+    opacity: .5;
+}
+
+.separator {
+    margin-top: 6rem;
+}
+
+.tag {
+    font-size: .9em;
+    opacity: .8;
+}
+
+.block {
+    margin-bottom: 1rem;
+}
+

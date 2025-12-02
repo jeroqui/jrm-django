@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>{% block title %}Home{% endblock %}</title>
+    
+    <link rel="icon" href="{% static 'app/favicon.ico' %}" type="image/x-icon">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;700&family=Red+Hat+Mono:ital,wght@0,400;0,500;1,400&family=Lexend:wght@100..900&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{% static 'app/css/main.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <div class="body-wrapper">
+        {% include 'components/navbar.html' %}
+        
+        {% block content %}{% endblock %}
+        
+        {% include 'components/footer.html' %}
+    </div>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+

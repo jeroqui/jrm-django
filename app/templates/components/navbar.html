@@ -1,0 +1,21 @@
+<nav class="navbar">
+    <div class="navbar-left">
+        <a href="{% url 'app:home' %}" class="navbar-btn">/</a>
+        <a href="#" class="navbar-btn">/blog</a>
+        <a href="#" class="navbar-btn">/projects</a>
+    </div>
+    <div class="navbar-right">
+        <div class="dropdown-wrapper">
+            <button class="navbar-btn" onclick="this.parentElement.classList.toggle('open')">
+                Lang
+            </button>
+            <div class="dropdown glass-card">
+                <span class="selected">catspanglish</span>
+                <div class="info">
+                    <p>Barrejo tots els idiomes que coneixo com em surt de la fava. Si no t'agrada. <a href="https://tenor.com/view/brooklyn-nine-nine-deal-with-it-amy-santiago-b99-brooklyn99-gif-18387659"><i>Deal with it</i></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+

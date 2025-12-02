@@ -1,0 +1,213 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block body_class %}home{% endblock %}
+
+{% block content %}
+<main>
+    <div class="hero">
+        <div class="container">
+            <h1 class="title">Jacob Ràfols Morilla</h1>
+            <h2 class="subtitle">
+                <a href="#narrative">escric</a>
+                <a href="#coding">programo</a>
+                <a href="#design">dissenyo</a>
+            </h2>
+        </div>
+        <canvas class="header-bg" width="100%" height="100%"></canvas>
+    </div>
+</main>
+
+<section id="intro">
+    <div class="section">
+        <h1>Què faig?</h1>
+        <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi
+            reiciendis quam recusandae at consequatur neque id velit
+            repudiandae quia totam. Esse in explicabo cupiditate accusamus
+            quo unde rerum molestiae velit.
+        </p>
+        <div class="align-right">
+            <a href="/cv" class="btn-link">
+                CV
+                &gt;
+            </a>
+        </div>
+    </div>
+</section>
+
+<section id="pilars">
+    <!-- Coding Pilar -->
+    <div id="coding" class="pilar">
+        <div class="pilar-content">
+            <div class="section">
+                <div class="columns">
+                    <div class="column">
+                        <div class="block">
+                            <h2 class="title-font"><span class="color-bg">jo</span><span>.</span><span class="color-bg">programo</span><span class="color-primary">()</span><span>;</span></h2>
+                        </div>
+
+                        <div class="block">
+                            <p>
+                                Jo programo com qui fa sudokus o sopes de lletres. No ho veig com una professió sinó com un passatemps. Programo per relaxar-me. Petits programes i eines que em simplifiquin la vida o la feina.
+                            </p>
+                        </div>
+                        <div class="block">
+                            <p>
+                                Soc massa mandrós per fer la mateixa feina dues vegades. I, per això vaig aprendre a programar.
+                            </p>
+                        </div>
+                        <p>
+                            <span class="tag">#i-use-vim-btw</span>
+                        </p>
+                    </div>
+                    <div class="column">
+                        <h3>Habilitats</h3>
+
+                        <div class="align-right">
+                            <a href="/projects" class="btn-link">
+                                Veure els projectes
+                                &gt;
+                            </a>
+
+                            <span class="sidenote">
+                                també tinc algunes coses a
+                                <a href="https://github.com/jeroqui">github</a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pilar-bg">
+            <div class="vanish-mask">
+                <div class="bg-decoration"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Design Pilar -->
+    <div id="design" class="pilar">
+        <div class="pilar-content">
+            <div class="section">
+                <div class="text-center">
+                    <h2>Dissenyo</h2>
+
+                    <div class="block">
+                        <p>
+                            Dissenyo perquè tinc massa idees i pocs contactes perquè algú amb més talent faci la part gràfica.
+                        </p>
+                    </div>
+                    <div class="block">
+                        <p>
+                            I a còpia de saltar d'idea en idea sense acabar-la mai, he acabat aprenent-ne prou.
+                        </p>
+                    </div>
+
+                    <a href="#" class="btn-link">
+                        Design/Video editing Reel
+                        ↗
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="pilar-bg">
+            <div class="vanish-mask">
+                <div class="dotted-overlay"></div>
+                <video loop autoplay muted class="background-video">
+                    <source src="{% static 'app/vid/videoreel.mp4' %}" type="video/mp4" />
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Narrative Pilar -->
+    <div id="narrative" class="pilar">
+        <div class="pilar-content">
+            <div class="section">
+                <div class="block">
+                    <h2>Narrativa</h2>
+                </div>
+                <div class="block">
+                    <p>
+                        M'agrada molt escriure històries. M'interessa sobretot l'escriptura de guions cinematogràfics. Algun dia espero poder escriure i dirigir les meves pròpies pel·lícules.
+                    </p>
+                </div>
+
+                <div class="align-right">
+                    <a href="#" class="btn-link">
+                        Explora les meves histories
+                        &gt;
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="pilar-bg">
+            <img src="{% static 'app/imgs/papers_decoration.png' %}" alt="" style="filter: brightness(.8); pointer-events:none;" />
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="section">
+        <div class="text-center">
+            <h1>Timeline</h1>
+            <hr class="subtitle" />
+        </div>
+
+        <div class="etapas">
+            <div class="etapa-wrapper">
+                <div class="etapa-line"></div>
+                <div class="etapa-content">
+                    <div class="title">
+                        <h3>Formació</h3>
+                    </div>
+                    <ul>
+                        <li>El roure</li>
+                        <li>Epiqueia</li>
+                        <li>Institut Vallbona d'Anoia</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="etapa-wrapper">
+                <div class="etapa-line"></div>
+                <div class="etapa-content">
+                    <div class="title">
+                        <h3>Laboral</h3>
+                    </div>
+                    <ul>
+                        <li>Unportal</li>
+                        <li>Traduit</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="etapa-wrapper">
+                <div class="etapa-line"></div>
+                <div class="etapa-content">
+                    <div class="title">
+                        <h3>Ara...</h3>
+                    </div>
+                    <ul>
+                        <li>GrandVoyage</li>
+                        <li>Grau en Filosofia <span class="hint">Universitat de Barcelona</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="objectius">
+    <div class="section">
+        <h1>Objectius</h1>
+        <p>Propers objectius</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'app/js/main.js' %}"></script>
+{% endblock %}
+
