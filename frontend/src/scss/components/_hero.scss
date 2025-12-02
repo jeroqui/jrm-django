@@ -1,7 +1,33 @@
+@use "../variables" as vars;
+
 .hero {
   position: relative;
   padding: 20rem 0;
   z-index: 1;
+
+  .container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 4rem;
+  }
+
+  .title {
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+    
+    a {
+      margin-right: 2rem;
+      opacity: 0.8;
+      transition: opacity vars.$hover-time ease;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
 
   .header-bg {
     position: absolute;
@@ -12,4 +38,3 @@
     z-index: -1;
   }
 }
-

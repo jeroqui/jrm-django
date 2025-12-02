@@ -11,14 +11,30 @@
     padding: 0 2rem;
   }
 
-  &#coding .bg-decoration {
-    width: 60%;
-    height: 100%;
-    background-color: grey;
-    opacity: 0.2;
-    transform: skewX(-35deg);
-    transform-origin: top left;
-    z-index: -1;
+  &#coding {
+    .bg-decoration {
+      width: 60%;
+      height: 100%;
+      background-color: grey;
+      opacity: 0.2;
+      transform: skewX(-35deg);
+      transform-origin: top left;
+      z-index: -1;
+  
+      @media screen and (max-width: 700px) {
+        width: 123%;
+      }
+    }
+
+    @media screen and (max-width: 700px) {
+      h2 {
+        font-size: 3rem;
+      }
+
+      p {
+        padding: 0;
+      }
+    }
   }
 
   .pilar-bg {
