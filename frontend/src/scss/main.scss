@@ -1,0 +1,212 @@
+@use "reset";
+@use "variables" as vars;
+
+// Components
+@use "components/navbar";
+@use "components/hero";
+@use "components/btn";
+@use "components/pilar";
+@use "components/etapa";
+@use "components/footer";
+@use "components/dropdown";
+@use "components/glass-card";
+
+// Elements
+@use "elements/links";
+@use "elements/overlays";
+
+// Pages
+@use "pages/home";
+
+// ==========================================================================
+// Base Styles
+// ==========================================================================
+body {
+  margin: 0;
+  background: linear-gradient(-75deg, vars.$bg-color 0%, vars.$bg-color-light 100%);
+  color: vars.$text-color;
+  font-family: "Red Hat Mono", monospace;
+  box-sizing: border-box;
+
+  // dot grid
+  background-image: radial-gradient(#3f3f3f, 1px, vars.$bg-color 0);
+  background-size: 40px 40px;
+}
+
+.body-wrapper {
+  position: relative;
+  max-width: 2048px;
+  margin: 0 auto;
+
+  @media screen and (min-width: 2048px) {
+    &::before,
+    &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      width: 40px;
+      height: 100%;
+      background: rgb(42, 38, 38);
+      z-index: 10;
+    }
+
+    &::before {
+      left: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(42, 38, 38, 1) 0%,
+        rgba(42, 38, 38, 0) 100%
+      );
+    }
+
+    &::after {
+      right: 0;
+      background: linear-gradient(
+        -90deg,
+        rgba(42, 38, 38, 1) 0%,
+        rgba(42, 38, 38, 0) 100%
+      );
+    }
+  }
+}
+
+h1,
+h2 {
+  font-family: "Cormorant", serif;
+  font-weight: normal;
+  margin: 0;
+}
+
+h1 {
+  font-size: 4rem;
+}
+
+h2 {
+  font-size: 3.5rem;
+}
+
+.title-font,
+.title {
+  font-family: "Lexend", sans-serif;
+}
+
+.title {
+  font-size: 4rem;
+}
+
+// ==========================================================================
+// Color Helpers
+// ==========================================================================
+.color-bg {
+  color: vars.$bg-color;
+}
+
+.bg-bg {
+  background-color: vars.$bg-color;
+}
+
+.color-bg-light {
+  color: vars.$bg-color-light;
+}
+
+.bg-bg-light {
+  background-color: vars.$bg-color-light;
+}
+
+.color-primary {
+  color: vars.$primary-color;
+}
+
+.bg-primary {
+  background-color: vars.$primary-color;
+}
+
+// ==========================================================================
+// Layout
+// ==========================================================================
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+
+  .column {
+    flex-basis: 300px;
+    flex-grow: 1;
+    margin: 0.8rem;
+  }
+}
+
+.section {
+  max-width: 1000px;
+  margin: 5rem auto;
+  padding: 0 1rem;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.text-center {
+  text-align: center;
+
+  p {
+    padding-left: 0;
+  }
+}
+
+.align-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  > * {
+    margin-right: 5rem;
+  }
+}
+
+hr.subtitle {
+  width: 20%;
+  color: vars.$text-color;
+  margin: 1rem auto;
+}
+
+@media screen and (max-width: 1200px) {
+  .section {
+    max-width: 800px;
+  }
+
+  .align-right > * {
+    margin-right: unset;
+  }
+}
+
+// ==========================================================================
+// Utilities
+// ==========================================================================
+.sidenote {
+  font-size: 0.8em;
+  opacity: 0.7;
+
+  &::before {
+    content: "*";
+  }
+}
+
+.hint {
+  opacity: 0.5;
+}
+
+.separator {
+  margin-top: 6rem;
+}
+
+.tag {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.block {
+  margin-bottom: 1rem;
+}
+

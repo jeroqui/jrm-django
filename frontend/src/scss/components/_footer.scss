@@ -1,0 +1,30 @@
+footer {
+  background-image: url("/static/app/imgs/triangles_decoration_footer.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top left;
+  overflow: hidden;
+}
+
+#social-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+
+  .fill-width {
+    grid-column: span 2;
+  }
+}
+
+#copy {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin: 3rem;
+
+  * {
+    margin: 0.1rem;
+  }
+}
+

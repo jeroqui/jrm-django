@@ -1,0 +1,22 @@
+@use "../variables" as vars;
+
+.dropdown-wrapper {
+  position: relative;
+
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    display: none;
+    flex-direction: column;
+
+    > .selected {
+      background-color: vars.$bg-color;
+    }
+  }
+
+  &.open .dropdown {
+    display: flex;
+  }
+}
+

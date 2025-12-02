@@ -1,0 +1,31 @@
+@use "../variables" as vars;
+
+a {
+  color: vars.$secondary-color;
+  font-weight: bold;
+  text-decoration: none;
+
+  &:not(.btn-link):hover {
+    text-decoration: underline;
+  }
+}
+
+.bubble {
+  display: inline-flex;
+  align-items: center;
+  color: vars.$secondary-color;
+  border-radius: 1rem;
+  padding: 0.2rem 0.5rem;
+  text-decoration: none;
+  background-color: #0004;
+  transition: background-color vars.$hover-time ease;
+
+  &:hover {
+    background-color: #0002;
+  }
+
+  span {
+    padding: 0 10pt;
+  }
+}
+

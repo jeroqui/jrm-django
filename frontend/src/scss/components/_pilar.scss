@@ -1,0 +1,41 @@
+@use "../variables" as vars;
+
+.pilar {
+  position: relative;
+  padding: 1px;
+  z-index: 1;
+
+  .pilar-content {
+    margin: 10rem 0;
+    margin-bottom: 15rem;
+    padding: 0 2rem;
+  }
+
+  &#coding .bg-decoration {
+    width: 60%;
+    height: 100%;
+    background-color: grey;
+    opacity: 0.2;
+    transform: skewX(-35deg);
+    transform-origin: top left;
+    z-index: -1;
+  }
+
+  .pilar-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100% !important;
+    z-index: -1;
+    width: 100%;
+
+    img {
+      width: 100%;
+    }
+
+    .center {
+      overflow: hidden;
+    }
+  }
+}
+

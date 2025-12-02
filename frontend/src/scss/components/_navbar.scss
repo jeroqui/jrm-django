@@ -1,0 +1,41 @@
+@use "../variables" as vars;
+
+body.home .navbar {
+  position: absolute;
+}
+
+.navbar {
+  display: flex;
+  position: static;
+  width: 100%;
+  z-index: 10;
+  background-color: rgba(vars.$bg-color, 0.8);
+  border-bottom: 1px solid black;
+  padding: 0.5rem 0;
+  justify-content: space-between;
+
+  .navbar-left {
+    display: flex;
+  }
+
+  .navbar-btn {
+    all: unset;
+    cursor: pointer;
+    display: block;
+    background-color: vars.$bg-color-light;
+    color: white;
+    padding: 0.5rem 1rem;
+    margin: 0 0.5rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: border vars.$hover-time ease,
+      background-color vars.$hover-time ease;
+
+    &:hover {
+      background-color: transparent;
+      border: 1px solid white;
+      text-decoration: none;
+    }
+  }
+}
+

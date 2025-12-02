@@ -1,0 +1,45 @@
+@use "../variables" as vars;
+
+.etapas {
+  padding: 0 2rem;
+}
+
+.etapa-wrapper {
+  display: flex;
+  margin: 1rem;
+
+  &:first-of-type .etapa-line {
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  &:last-of-type .etapa-line::after {
+    content: "";
+    position: absolute;
+    bottom: -16px;
+    width: 8px;
+    height: 8px;
+    margin-top: 8px;
+    background-color: vars.$bg-color-light;
+  }
+}
+
+.etapa-content {
+  padding: 0.5rem;
+
+  .title {
+    font-size: 1.5em;
+    margin-bottom: 0.5rem;
+  }
+
+  li {
+    padding-bottom: 0.3rem;
+  }
+}
+
+.etapa-line {
+  position: relative;
+  width: 8px;
+  background-color: vars.$bg-color-light;
+  margin-right: 4rem;
+}
+
