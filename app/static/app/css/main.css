@@ -386,8 +386,13 @@ a:not(.btn-link):hover {
 .bubble:hover {
   background-color: rgba(0, 0, 0, 0.1333333333);
 }
+.bubble .icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
+}
 .bubble span {
-  padding: 0 10pt;
+  padding: 0 0.5rem;
 }
 
 .dotted-overlay {
@@ -1033,6 +1038,10 @@ a:not(.btn-link):hover {
   border-style: dashed;
 }
 
+html {
+  background-color: rgb(34, 33, 59);
+}
+
 body {
   margin: 0;
   background: linear-gradient(-75deg, rgb(34, 33, 59) 0%, rgb(61, 57, 138) 100%);
@@ -1054,18 +1063,18 @@ body {
     display: block;
     position: absolute;
     top: 0;
-    width: 40px;
+    width: 8vw;
     height: 100%;
-    background: rgb(42, 38, 38);
+    background: #141333;
     z-index: 10;
   }
   .body-wrapper::before {
     left: 0;
-    background: linear-gradient(90deg, rgb(42, 38, 38) 0%, rgba(42, 38, 38, 0) 100%);
+    background: linear-gradient(90deg, #141333 0%, rgba(20, 19, 51, 0) 100%);
   }
   .body-wrapper::after {
     right: 0;
-    background: linear-gradient(-90deg, rgb(42, 38, 38) 0%, rgba(42, 38, 38, 0) 100%);
+    background: linear-gradient(-90deg, #141333 0%, rgba(20, 19, 51, 0) 100%);
   }
 }
 
