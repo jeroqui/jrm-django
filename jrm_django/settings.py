@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_browser_reload',
+    'meta',
     'app',
 ]
 
@@ -134,3 +135,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Login URLs
 LOGIN_URL = 'app:login'
 LOGIN_REDIRECT_URL = 'app:dashboard'
+
+# Django Meta settings
+META_SITE_PROTOCOL = 'https'
+META_SITE_DOMAIN = 'jacob.rafols.cat'
+META_SITE_NAME = 'Jacob Ràfols Morilla'
+META_USE_OG_PROPERTIES = True
+META_USE_TWITTER_PROPERTIES = True
+META_USE_SCHEMAORG_PROPERTIES = True
+META_DEFAULT_IMAGE = '/static/app/imgs/cover.webp'
+META_TWITTER_TYPE = 'summary_large_image'
+META_FB_TYPE = 'website'
+META_OG_NAMESPACES = ['og', 'fb']
