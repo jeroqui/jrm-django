@@ -1,0 +1,32 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Episodi{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <div class="dashboard-header">
+            <div>
+                <a href="{% url 'app:episode_list' %}" class="back-link">← Episodis</a>
+                <h1>Eliminar Episodi</h1>
+            </div>
+        </div>
+
+        <div class="form-card delete-confirm">
+            <p>Estàs segur que vols eliminar l'episodi:</p>
+            <h2>{{ episode.title }}</h2>
+            <p class="episode-date">{{ episode.date|date:"d/m/Y" }}</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-actions">
+                    <a href="{% url 'app:episode_list' %}" class="btn-link btn-secondary">Cancel·lar</a>
+                    <button type="submit" class="btn-link btn-danger">Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

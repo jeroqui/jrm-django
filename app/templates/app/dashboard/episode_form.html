@@ -1,0 +1,55 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <div class="dashboard-header">
+            <div>
+                <a href="{% url 'app:episode_list' %}" class="back-link">← Episodis</a>
+                <h1>{{ title }}</h1>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form method="post" enctype="multipart/form-data" class="episode-form">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="form-group {% if field.errors %}has-error{% endif %}">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="field-errors">
+                        {% for error in field.errors %}
+                        <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if field.help_text %}
+                    <span class="help-text">{{ field.help_text }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                {% if episode.audio_clip %}
+                <div class="current-file">
+                    <label>Clip actual:</label>
+                    <audio controls preload="metadata">
+                        <source src="{{ episode.audio_clip.url }}" type="audio/mpeg">
+                    </audio>
+                </div>
+                {% endif %}
+
+                <div class="form-actions">
+                    <a href="{% url 'app:episode_list' %}" class="btn-link btn-secondary">Cancel·lar</a>
+                    <button type="submit" class="btn-link">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

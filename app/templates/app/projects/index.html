@@ -1,0 +1,24 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Projectes{% endblock %}
+
+{% block content %}
+<div class="projects-page">
+    <div class="section">
+        <h1>Projectes</h1>
+        <p class="intro">Coses en les que treballo o he treballat.</p>
+
+        <div class="projects-grid">
+            <a href="{% url 'app:project_de_que_va' %}" class="project-card">
+                <div class="project-category">ràdio</div>
+                <h2>De Que Va</h2>
+                <p>Secció de ràdio santboi sobre filosofia i cinema</p>
+                <span class="project-link">Veure projecte →</span>
+            </a>
+            
+            <!-- Add more project cards here -->
+        </div>
+    </div>
+</div>
+{% endblock %}

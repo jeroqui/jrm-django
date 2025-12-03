@@ -1,0 +1,64 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Episodis - De Que Va{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <div class="dashboard-header">
+            <div>
+                <a href="{% url 'app:dashboard' %}" class="back-link">← Dashboard</a>
+                <h1>De Que Va - Episodis</h1>
+            </div>
+            <a href="{% url 'app:episode_create' %}" class="btn-link">+ Nou Episodi</a>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if episodes %}
+        <div class="episodes-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>#</th>
+                        <th>Títol</th>
+                        <th>Clip</th>
+                        <th>Link</th>
+                        <th>Accions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for episode in episodes %}
+                    <tr>
+                        <td>{{ episode.date|date:"d/m/Y" }}</td>
+                        <td>{{ episode.episode_number|default:"-" }}</td>
+                        <td>{{ episode.title }}</td>
+                        <td>{% if episode.audio_clip %}✓{% else %}—{% endif %}</td>
+                        <td>{% if episode.full_episode_url %}✓{% else %}—{% endif %}</td>
+                        <td class="actions">
+                            <a href="{% url 'app:episode_edit' episode.pk %}" class="btn-link btn-small">Editar</a>
+                            <a href="{% url 'app:episode_delete' episode.pk %}" class="btn-link btn-small btn-danger">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No hi ha episodis encara.</p>
+            <a href="{% url 'app:episode_create' %}" class="btn-link">Crear primer episodi</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

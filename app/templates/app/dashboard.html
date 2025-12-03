@@ -11,12 +11,20 @@
             <a href="{% url 'app:logout' %}" class="btn-link btn-secondary">Logout</a>
         </div>
 
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="dashboard-grid">
             <!-- Blog Posts Card -->
             <div class="dashboard-card">
                 <div class="card-header">
                     <h2>Blog Posts</h2>
-                    <a href="{% url 'app:blog_new' %}" class="btn-link">+ New Post</a>
+                    <a href="{% url 'app:blog_new' %}" class="btn-link">+ Nou</a>
                 </div>
                 
                 <div class="card-stats">
@@ -26,11 +34,11 @@
                     </div>
                     <div class="stat">
                         <span class="stat-value">{{ published_count }}</span>
-                        <span class="stat-label">Published</span>
+                        <span class="stat-label">Publicats</span>
                     </div>
                     <div class="stat">
                         <span class="stat-value">{{ draft_count }}</span>
-                        <span class="stat-label">Drafts</span>
+                        <span class="stat-label">Esborranys</span>
                     </div>
                 </div>
 
@@ -41,33 +49,53 @@
                         <span class="item-title">{{ post.title }}</span>
                         <span class="item-meta">
                             {% if post.status == 'draft' %}
-                            <span class="badge draft">Draft</span>
+                            <span class="badge draft">Esborrany</span>
                             {% else %}
-                            <span class="badge published">Published</span>
+                            <span class="badge published">Publicat</span>
                             {% endif %}
                         </span>
                     </a>
                     {% endfor %}
                 </div>
-                <a href="{% url 'app:blog_drafts' %}" class="card-link">View all posts →</a>
+                <a href="{% url 'app:blog_drafts' %}" class="card-link">Veure tots →</a>
                 {% else %}
                 <div class="card-empty">
-                    <p>No posts yet</p>
+                    <p>Cap post encara</p>
                 </div>
                 {% endif %}
             </div>
 
-            <!-- More utility cards can be added here -->
-            <div class="dashboard-card placeholder-card">
+            <!-- De Que Va Episodes Card -->
+            <div class="dashboard-card">
                 <div class="card-header">
-                    <h2>Projects</h2>
+                    <h2>De Que Va</h2>
+                    <a href="{% url 'app:episode_create' %}" class="btn-link">+ Nou</a>
                 </div>
+                
+                <div class="card-stats">
+                    <div class="stat">
+                        <span class="stat-value">{{ episodes_count }}</span>
+                        <span class="stat-label">Episodis</span>
+                    </div>
+                </div>
+
+                {% if episodes %}
+                <div class="card-list">
+                    {% for episode in episodes %}
+                    <a href="{% url 'app:episode_edit' episode.pk %}" class="card-list-item">
+                        <span class="item-title">{{ episode.title }}</span>
+                        <span class="item-meta">{{ episode.date|date:"d/m/Y" }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'app:episode_list' %}" class="card-link">Veure tots →</a>
+                {% else %}
                 <div class="card-empty">
-                    <p>Coming soon...</p>
+                    <p>Cap episodi encara</p>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-

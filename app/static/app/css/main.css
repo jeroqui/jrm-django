@@ -1038,6 +1038,304 @@ a:not(.btn-link):hover {
   border-style: dashed;
 }
 
+.messages {
+  margin-bottom: 2rem;
+}
+.messages .message {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+.messages .message.success {
+  background: rgba(100, 200, 100, 0.2);
+  border: 1px solid rgba(100, 200, 100, 0.4);
+  color: #7f7;
+}
+.messages .message.error {
+  background: rgba(255, 100, 100, 0.2);
+  border: 1px solid rgba(255, 100, 100, 0.4);
+  color: #faa;
+}
+
+.back-link {
+  display: inline-block;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-bottom: 0.5rem;
+}
+.back-link:hover {
+  opacity: 1;
+}
+
+.episodes-table {
+  overflow-x: auto;
+}
+.episodes-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.episodes-table table th,
+.episodes-table table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.episodes-table table th {
+  font-weight: normal;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+.episodes-table table td.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.form-card {
+  max-width: 600px;
+  background: rgba(61, 57, 138, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+}
+.form-card.delete-confirm {
+  text-align: center;
+}
+.form-card.delete-confirm h2 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.5rem;
+}
+.form-card.delete-confirm .episode-date {
+  opacity: 0.6;
+  margin-bottom: 2rem;
+  padding-left: 0;
+}
+
+.episode-form .form-group {
+  margin-bottom: 1.5rem;
+}
+.episode-form .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+.episode-form .form-group.has-error .form-input {
+  border-color: #f66;
+}
+.episode-form .form-group .field-errors {
+  margin-top: 0.5rem;
+}
+.episode-form .form-group .field-errors .error {
+  color: #faa;
+  font-size: 0.85rem;
+}
+.episode-form .form-group .help-text {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+.episode-form .form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  font-family: inherit;
+}
+.episode-form .form-input:focus {
+  outline: none;
+  border-color: orange;
+}
+.episode-form .form-input[type=file] {
+  padding: 0.5rem;
+}
+.episode-form textarea.form-input {
+  resize: vertical;
+  min-height: 100px;
+}
+.episode-form .current-file {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+.episode-form .current-file label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+.episode-form .current-file audio {
+  width: 100%;
+}
+.episode-form .form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.projects-page {
+  min-height: 80vh;
+}
+.projects-page .intro {
+  opacity: 0.8;
+  margin-bottom: 3rem;
+  padding-left: 0;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.project-card {
+  display: block;
+  padding: 2rem;
+  background: rgba(61, 57, 138, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  transition: border-color 0.4s ease, transform 0.4s ease;
+}
+.project-card:hover {
+  border-color: orange;
+  transform: translateY(-4px);
+  text-decoration: none;
+}
+.project-card .project-category {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: orange;
+  margin-bottom: 0.5rem;
+}
+.project-card h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: normal;
+}
+.project-card p {
+  opacity: 0.8;
+  margin-bottom: 1rem;
+  padding-left: 0;
+}
+.project-card .project-link {
+  color: rgb(166, 255, 243);
+  font-size: 0.9rem;
+}
+
+.project-page .project-header {
+  padding: 6rem 0 4rem;
+  background: rgba(61, 57, 138, 0.3);
+  margin-bottom: 2rem;
+}
+.project-page .project-header .back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+.project-page .project-header .back-link:hover {
+  opacity: 1;
+}
+.project-page .project-header .project-category {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: orange;
+  margin-bottom: 0.5rem;
+}
+.project-page .project-header h1 {
+  margin-bottom: 0.5rem;
+}
+.project-page .project-header .tagline {
+  font-size: 1.3rem;
+  opacity: 0.8;
+  padding-left: 0;
+}
+.project-page section {
+  margin-bottom: 4rem;
+}
+.project-page .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.project-page .section-header h2 {
+  margin-bottom: 0;
+}
+.project-page h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+.project-page .listen-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.episodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.episode-card {
+  padding: 1.5rem;
+  background: rgba(61, 57, 138, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.episode-card .episode-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+.episode-card .episode-number {
+  color: orange;
+  opacity: 1;
+}
+.episode-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  font-family: "Cormorant", serif;
+}
+.episode-card p {
+  opacity: 0.8;
+  padding-left: 0;
+  margin-bottom: 1rem;
+}
+.episode-card .episode-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.episode-card .audio-player audio {
+  width: 100%;
+  height: 40px;
+  border-radius: 20px;
+}
+.episode-card .audio-player audio::-webkit-media-controls-panel {
+  background: rgba(34, 33, 59, 0.8);
+}
+
+.de-que-va .project-header {
+  background: linear-gradient(135deg, rgba(61, 57, 138, 0.5) 0%, rgba(139, 69, 19, 0.3) 100%);
+}
+
 html {
   background-color: rgb(34, 33, 59);
 }

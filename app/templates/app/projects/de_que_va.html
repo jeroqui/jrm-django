@@ -1,0 +1,91 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}De Que Va{% endblock %}
+
+{% block content %}
+<div class="project-page de-que-va">
+    <header class="project-header">
+        <div class="section">
+            <a href="{% url 'app:projects' %}" class="back-link">← Projectes</a>
+            <div class="project-category">ràdio</div>
+            <h1>De Que Va</h1>
+            <p class="tagline">Secció sobre filosofia i cinema a Ràdio Sant Boi</p>
+        </div>
+    </header>
+
+    <section class="project-intro">
+        <div class="section">
+            <div class="columns">
+                <div class="column">
+                    <h2>Sobre el programa</h2>
+                    <p>
+                        "De Que Va" és una secció del programa 'Gent de Carrer' de Ràdio Sant Boi.
+                        On parlem de cinema des d'una perspectiva de guionista, la meva i comentant-hi,
+                        a vegades, coses de filosofia que em comenten a classe. Res més.
+                    </p>
+                </div>
+                <div class="column">
+                    <h2>On escoltar</h2>
+                    <div class="listen-links">
+                        <a href="https://gentdecarrer.com/" target="_blank" class="btn-link">
+                            📻 Ràdio Sant Boi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="project-episodes">
+        <div class="section">
+            <div class="section-header">
+                <h2>Episodis</h2>
+                {% if user.is_authenticated %}
+                <a href="{% url 'app:episode_create' %}" class="btn-link btn-small">+ Nou</a>
+                {% endif %}
+            </div>
+            
+            {% if episodes %}
+            <div class="episodes-list">
+                {% for episode in episodes %}
+                <div class="episode-card">
+                    <div class="episode-meta">
+                        <span class="episode-date">{{ episode.date|date:"d M Y" }}</span>
+                        {% if episode.episode_number %}
+                        <span class="episode-number">#{{ episode.episode_number }}</span>
+                        {% endif %}
+                    </div>
+                    <h3>{{ episode.title }}</h3>
+                    {% if episode.description %}
+                    <p>{{ episode.description }}</p>
+                    {% endif %}
+                    
+                    <div class="episode-actions">
+                        {% if episode.audio_clip %}
+                        <div class="audio-player">
+                            <audio controls preload="metadata">
+                                <source src="{{ episode.audio_clip.url }}" type="audio/mpeg">
+                                El teu navegador no suporta l'element d'àudio.
+                            </audio>
+                        </div>
+                        {% endif %}
+                        
+                        {% if episode.full_episode_url %}
+                        <a href="{{ episode.full_episode_url }}" target="_blank" class="btn-link btn-secondary btn-small">
+                            Episodi complet ↗
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>Pròximament...</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

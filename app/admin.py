@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Post
+from .models import User, Post, DeQueVaEpisode
 
 
 @admin.register(User)
@@ -22,3 +22,21 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     date_hierarchy = 'created_at'
     ordering = ('-created_at',)
+
+
+@admin.register(DeQueVaEpisode)
+class DeQueVaEpisodeAdmin(admin.ModelAdmin):
+    """De Que Va Episode admin."""
+    list_display = ('title', 'date', 'episode_number', 'has_clip', 'has_link')
+    list_filter = ('date',)
+    search_fields = ('title', 'description')
+    date_hierarchy = 'date'
+    ordering = ('-date',)
+    
+    @admin.display(boolean=True, description='Clip')
+    def has_clip(self, obj):
+        return bool(obj.audio_clip)
+    
+    @admin.display(boolean=True, description='Link')
+    def has_link(self, obj):
+        return bool(obj.full_episode_url)

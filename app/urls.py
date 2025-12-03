@@ -13,6 +13,14 @@ urlpatterns = [
     
     # Dashboard
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/episodes/', views.episode_list, name='episode_list'),
+    path('dashboard/episodes/new/', views.episode_create, name='episode_create'),
+    path('dashboard/episodes/<int:pk>/edit/', views.episode_edit, name='episode_edit'),
+    path('dashboard/episodes/<int:pk>/delete/', views.episode_delete, name='episode_delete'),
+    
+    # Projects
+    path('projects/', views.projects_index, name='projects'),
+    path('projects/de-que-va/', views.project_de_que_va, name='project_de_que_va'),
     
     # Blog
     path('blog/', views.blog_list, name='blog_list'),

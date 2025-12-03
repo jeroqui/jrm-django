@@ -133,3 +133,177 @@
   }
 }
 
+// Messages
+.messages {
+  margin-bottom: 2rem;
+
+  .message {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+
+    &.success {
+      background: rgba(100, 200, 100, 0.2);
+      border: 1px solid rgba(100, 200, 100, 0.4);
+      color: #7f7;
+    }
+
+    &.error {
+      background: rgba(255, 100, 100, 0.2);
+      border: 1px solid rgba(255, 100, 100, 0.4);
+      color: #faa;
+    }
+  }
+}
+
+// Back link
+.back-link {
+  display: inline-block;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-bottom: 0.5rem;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Episodes table
+.episodes-table {
+  overflow-x: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(white, 0.1);
+    }
+
+    th {
+      font-weight: normal;
+      opacity: 0.7;
+      font-size: 0.9rem;
+    }
+
+    td.actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+}
+
+// Form card
+.form-card {
+  max-width: 600px;
+  background: rgba(vars.$bg-color-light, 0.3);
+  border: 1px solid rgba(white, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+
+  &.delete-confirm {
+    text-align: center;
+
+    h2 {
+      margin: 1rem 0 0.5rem;
+      font-size: 1.5rem;
+    }
+
+    .episode-date {
+      opacity: 0.6;
+      margin-bottom: 2rem;
+      padding-left: 0;
+    }
+  }
+}
+
+.episode-form {
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    &.has-error {
+      .form-input {
+        border-color: #f66;
+      }
+    }
+
+    .field-errors {
+      margin-top: 0.5rem;
+
+      .error {
+        color: #faa;
+        font-size: 0.85rem;
+      }
+    }
+
+    .help-text {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      opacity: 0.6;
+    }
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(white, 0.2);
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: vars.$primary-color;
+    }
+
+    &[type="file"] {
+      padding: 0.5rem;
+    }
+  }
+
+  textarea.form-input {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .current-file {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    audio {
+      width: 100%;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(white, 0.1);
+  }
+}
+
