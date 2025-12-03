@@ -6,6 +6,7 @@ app_name = 'app'
 urlpatterns = [
     # Home
     path('', views.home, name='home'),
+    path('cv/', views.cv, name='cv'),
     
     # Auth
     path('login/', views.login_view, name='login'),
