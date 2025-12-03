@@ -1,0 +1,109 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Periòdics de Doskvol{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Tapestry&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'app/projects/doskvol-news/news.css' %}">
+{% endblock %}
+
+{% block body_class %}doskvol-newspapers{% endblock %}
+
+{% block content %}
+<div id="doskvol-app">
+    <div class="wrapper">
+        <div class="main">
+            <a href="{% url 'app:projects' %}" class="back-link">← Projectes</a>
+            <h1>Periòdics de Doskvol</h1>
+            <h3>Campanya: Lime & Wine</h3>
+            <span class="author">per: Jacob Ràfols</span>
+            <p>Imatges pesades. Scroll lateral per veure-les totes.</p>
+            <p class="hint">Fes clic a una imatge per ampliar-la.</p>
+        </div>
+
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico1.png' %}" alt="Periòdic 1" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico2.png' %}" alt="Periòdic 2" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico3_stripped.png' %}" alt="Periòdic 3" style="background-color: black" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico4.png' %}" alt="Periòdic 4" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico5_pag1.png' %}" alt="Periòdic 5" data-pages="2" data-page2="{% static 'app/projects/doskvol-news/images/Periodico5_pag2.png' %}">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico6.png' %}" alt="Periòdic 6" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/recortes_periodico_7.png' %}" alt="Periòdic 7" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/recortes_periodico_8.png' %}" alt="Periòdic 8" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico10.jpg' %}" alt="Periòdic 10" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico11_pag1.svg' %}" alt="Periòdic 11" data-pages="3" data-page2="{% static 'app/projects/doskvol-news/images/Periodico11_pag2.svg' %}" data-page3="{% static 'app/projects/doskvol-news/images/Periodico11_pag3.svg' %}">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico13.png' %}" alt="Periòdic 13" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico14.svg' %}" alt="Periòdic 14" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico15.svg' %}" alt="Periòdic 15" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico16.png' %}" alt="Periòdic 16" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico_17-1.png' %}" alt="Periòdic 17" data-pages="2" data-page2="{% static 'app/projects/doskvol-news/images/Periodico_17-2.png' %}">
+        <img src="{% static 'app/projects/doskvol-news/images/latest_periodico.png' %}" alt="Últim Periòdic" data-pages="1">
+        <img src="{% static 'app/projects/doskvol-news/images/Periodico_18-1_edit_rez.png' %}" alt="Periòdic 18" data-pages="3" data-page2="{% static 'app/projects/doskvol-news/images/Periodico_18-2_edit_rez.png' %}" data-page3="{% static 'app/projects/doskvol-news/images/Periodico_18-3_edit_rez.png' %}">
+    </div>
+
+    <div id="lightbox" class="hidden">
+        <div class="lightbox-close" onclick="closeLightbox()"></div>
+        <div class="lightbox-content"></div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const images = document.querySelectorAll('#doskvol-app .wrapper img');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxContent = lightbox.querySelector('.lightbox-content');
+    let zoom = 1;
+
+    images.forEach(img => {
+        img.addEventListener('click', function() {
+            const pages = parseInt(this.dataset.pages) || 1;
+            lightboxContent.innerHTML = '';
+            
+            // First page is always the src
+            const img1 = document.createElement('img');
+            img1.src = this.src;
+            img1.onclick = toggleZoom;
+            lightboxContent.appendChild(img1);
+            
+            // Additional pages from data attributes
+            for (let i = 2; i <= pages; i++) {
+                const pageUrl = this.dataset['page' + i];
+                if (pageUrl) {
+                    const imgN = document.createElement('img');
+                    imgN.src = pageUrl;
+                    imgN.onclick = toggleZoom;
+                    lightboxContent.appendChild(imgN);
+                }
+            }
+            
+            lightbox.classList.remove('hidden');
+            zoom = 1;
+            updateZoom();
+        });
+    });
+
+    function toggleZoom() {
+        zoom = zoom === 1 ? 2 : 1;
+        updateZoom();
+    }
+
+    function updateZoom() {
+        lightboxContent.querySelectorAll('img').forEach(img => {
+            img.style.height = (zoom * 100) + '%';
+        });
+    }
+
+    function closeLightbox() {
+        lightbox.classList.add('hidden');
+    }
+
+    // Close on escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeLightbox();
+    });
+
+    // Expose to global for onclick
+    window.closeLightbox = closeLightbox;
+})();
+</script>
+{% endblock %}

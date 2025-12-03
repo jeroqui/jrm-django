@@ -33,3 +33,15 @@ def project_de_que_va(request):
     })
 
 
+def project_doskvol_newspapers(request):
+    """Doskvol Newspapers - Blades in the Dark campaign props."""
+    meta = Meta(
+        title='Periòdics de Doskvol',
+        description='Periòdics creats per a la campanya de Blades in the Dark "Lime & Wine".',
+        url=request.build_absolute_uri(),
+        schemaorg_type='CreativeWork',
+    )
+    
+    return render(request, 'app/projects/doskvol_newspapers.html', {'meta': meta})
+
+
