@@ -22,6 +22,7 @@ urlpatterns = [
     path('projects/', views.projects_index, name='projects'),
     path('projects/de-que-va/', views.project_de_que_va, name='project_de_que_va'),
     path('projects/doskvol-newspapers/', views.project_doskvol_newspapers, name='project_doskvol_newspapers'),
+    path('projects/ortografia/', views.project_ortografia, name='project_ortografia'),
     
     # Blog
     path('blog/', views.blog_list, name='blog_list'),

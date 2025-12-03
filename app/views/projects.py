@@ -45,3 +45,15 @@ def project_doskvol_newspapers(request):
     return render(request, 'app/projects/doskvol_newspapers.html', {'meta': meta})
 
 
+def project_ortografia(request):
+    """Ortografia - Spelling practice game."""
+    meta = Meta(
+        title='Ortografia',
+        description='Joc per practicar l\'ortografia en català i castellà.',
+        url=request.build_absolute_uri(),
+        schemaorg_type='WebApplication',
+    )
+    
+    return render(request, 'app/projects/ortografia.html', {'meta': meta})
+
+
