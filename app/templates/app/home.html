@@ -1,5 +1,5 @@
 {% extends 'app/base.html' %}
-{% load static %}
+{% load static compress %}
 
 {% block body_class %}home{% endblock %}
 
@@ -208,6 +208,8 @@
 {% endblock %}
 
 {% block extra_js %}
+{% compress js %}
 <script src="{% static 'app/js/main.js' %}"></script>
+{% endcompress %}
 {% endblock %}
 

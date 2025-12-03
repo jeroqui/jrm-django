@@ -1,4 +1,4 @@
-{% load static meta debug %}
+{% load static meta compress %}
 <!DOCTYPE html>
 <html lang="ca" {% meta_namespaces %}>
 <head>
@@ -13,7 +13,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;700&family=Red+Hat+Mono:ital,wght@0,400;0,500;1,400&family=Lexend:wght@100..900&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     
+    {% compress css %}
     <link rel="stylesheet" href="{% static 'app/css/main.css' %}">
+    {% endcompress %}
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
