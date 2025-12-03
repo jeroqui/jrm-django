@@ -27,3 +27,4 @@ def svg(name, css_class='icon'):
     except FileNotFoundError:
         return ''
 
+
