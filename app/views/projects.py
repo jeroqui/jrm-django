@@ -57,3 +57,27 @@ def project_ortografia(request):
     return render(request, 'app/projects/ortografia.html', {'meta': meta})
 
 
+def project_pomesagres(request):
+    """Pomes Agres - Social role-playing game."""
+    meta = Meta(
+        title='Pomes Agres: Un joc de rol social',
+        description='Un joc de rol social on encarnareu uns mafiosos sense escrupuls mentre disfruteu d\'una festa com manen els anys 20.',
+        url=request.build_absolute_uri(),
+        schemaorg_type='Game',
+    )
+    
+    return render(request, 'app/projects/pomesagres/index.html', {'meta': meta})
+
+
+def project_pomesagres_normes(request):
+    """Pomes Agres - Rules page."""
+    meta = Meta(
+        title='Normes | Pomes Agres',
+        description='Les normes de Pomes Agres - Un joc de rol social.',
+        url=request.build_absolute_uri(),
+        schemaorg_type='Game',
+    )
+    
+    return render(request, 'app/projects/pomesagres/normes.html', {'meta': meta})
+
+

@@ -24,6 +24,8 @@ urlpatterns = [
     path('projects/de-que-va/', views.project_de_que_va, name='project_de_que_va'),
     path('projects/doskvol-newspapers/', views.project_doskvol_newspapers, name='project_doskvol_newspapers'),
     path('projects/ortografia/', views.project_ortografia, name='project_ortografia'),
+    path('projects/pomesagres/', views.project_pomesagres, name='project_pomesagres'),
+    path('projects/pomesagres/normes/', views.project_pomesagres_normes, name='project_pomesagres_normes'),
     
     # Blog
     path('blog/', views.blog_list, name='blog_list'),

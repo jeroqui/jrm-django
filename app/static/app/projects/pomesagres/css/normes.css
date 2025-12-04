@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Federo&family=Flow+Block&family=Kristi&family=Limelight&family=Special+Elite&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap');
+
+html {
+     height: 100vh;
+     overflow-y: hidden;
+}
+
+body {
+     padding: 0;
+     margin: 0;
+
+     box-sizing: border-box;
+
+     height: 100%;
+
+     font-family: 'PT Mono', monospace;
+     padding: 2rem 0;
+}
+
+.normes-container {
+     max-height: 100%;
+     column-width: 450px;
+
+     column-gap: 4rem;
+     margin-left: 10rem;
+
+     column-rule: 2px solid gray;
+}
+
+.normes-image-container {
+     float: left;
+     max-width: 40%;
+     padding: 1rem;
+
+     break-before: avoid;
+}
+
+.normes-image-container img {
+     width: 100%;
+}
+
+.normes-image-container.center {
+     float: unset;
+     margin: 0 auto;
+}
+
+h1 {
+     column-span: 2;
+}
+
+h1 {
+     font-family: 'Limelight', cursive;
+     font-size: 4rem;
+     font-weight: normal;
+     
+     margin-top: 0;
+     padding-top: 4rem;
+}
+
+h2 {
+     font-size: 2.3rem;
+}
+
+h2, h3, button {
+     font-family: 'Federo', sans-serif;
+     font-weight: normal;
+}
+
+ h1, h2 {
+     text-align: center;
+     break-after: avoid-column;
+}
+ h1 {
+     text-transform: uppercase;
+}
+ h2, h3, em, th, .cm-keyword {
+     text-decoration: underline;
+}
+ blockquote, strong {
+     color: orange 
+}
+ blockquote {
+     margin-left: 30px;
+     margin-right: 30px
+}
+a, .footnote-line {
+     color: #333;
+}
+ em, strong {
+     font-style: normal;
+}
+ ul {
+     list-style-type: square 
+}
+
+
+
+hr {
+     border: none;
+     text-align: center;
+}
+
+hr::after {
+     content: ' --- ';
+}
+
+
+
+/* Numbering */
+h1 {
+     counter-reset: h2 
+}
+ h2 {
+     counter-reset: h3 
+}
+h2:before {
+     counter-increment: h2;
+     content: counter(h2) ". " 
+}
+h3:before {
+     counter-increment: h3;
+     content: counter(h2) "." counter(h3) ". " 
+}
+
+
+
+@media screen and (max-width: 600px) {
+     .normes-container {
+          margin-left: 1rem;
+     }
+}
+
+
+@media print {
+     .normes-container {
+          max-height: unset;
+          column-width: unset;
+     
+          column-gap: unset;
+          margin-left: 0;
+     }
+}

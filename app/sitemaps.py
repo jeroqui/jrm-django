@@ -38,7 +38,7 @@ class ProjectsSitemap(Sitemap):
 
     def items(self):
         # Add project URLs here as you create them
-        return ['app:project_de_que_va', 'app:project_doskvol_newspapers', 'app:project_ortografia']
+        return ['app:project_de_que_va', 'app:project_doskvol_newspapers', 'app:project_ortografia', 'app:project_pomesagres']
 
     def location(self, item):
         return reverse(item)
