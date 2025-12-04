@@ -1,9 +1,11 @@
 import * as THREE from "three";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let renderer: THREE.WebGLRenderer;
-let model: THREE.Mesh;
+let model: THREE.Group | null = null;
 let isMouseDown = false;
 let previousMouseX = 0;
 
@@ -26,18 +28,28 @@ export function initHeader(): void {
   camera.position.set(0, 2, 5);
 
   // Renderer
-  renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+  renderer = new THREE.WebGLRenderer({ 
+    canvas, 
+    alpha: true,
+    antialias: true,
+  });
   renderer.setSize(canvasRect.width, canvasRect.height);
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  // Add ambient light
-  const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+  // Add ambient light (soft fill)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambientLight);
 
-  // Directional Light
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(5, 10, 5);
+  // Add hemisphere light for natural sky/ground ambient
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.4);
+  hemiLight.position.set(0, 20, 0);
+  scene.add(hemiLight);
+
+  // Main directional light (further away and higher)
+  const light = new THREE.DirectionalLight(0xffffff, 1.2);
+  light.position.set(10, 20, 15);
   light.castShadow = true;
   light.shadow.mapSize.width = 2048;
   light.shadow.mapSize.height = 2048;
@@ -53,7 +65,7 @@ export function initHeader(): void {
 
   scene.add(light);
 
-  // Ground
+  // Ground plane for shadows
   const planeGeometry = new THREE.PlaneGeometry(10, 10);
   const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
   const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -61,15 +73,45 @@ export function initHeader(): void {
   plane.receiveShadow = true;
   scene.add(plane);
 
-  // Model (Cube placeholder)
-  const cubeGeometry = new THREE.BoxGeometry();
-  const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x0077ff });
-  model = new THREE.Mesh(cubeGeometry, cubeMaterial);
-  model.castShadow = true;
-  model.receiveShadow = true;
-  model.position.y = 0.5;
-  model.position.x = 3;
-  scene.add(model);
+  // Load OBJ model with solid material
+  const objLoader = new OBJLoader();
+  objLoader.setPath("/static/app/docs/");
+  objLoader.load("estilografica.obj", (object) => {
+    model = object;
+    
+    // Create a solid opaque material
+    const solidMaterial = new THREE.MeshStandardMaterial({
+      color: 0x888888,
+      metalness: 0.3,
+      roughness: 0.5,
+      side: THREE.DoubleSide,  // Render both sides in case of flipped normals
+      transparent: false,
+      opacity: 1,
+      depthWrite: true,
+      depthTest: true,
+    });
+    
+    // Apply solid material to all meshes and fix geometry for smooth shading
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        child.material = solidMaterial;
+        
+        // Merge vertices and recompute normals for smooth shading
+        if (child.geometry) {
+          child.geometry = BufferGeometryUtils.mergeVertices(child.geometry);
+          child.geometry.computeVertexNormals();
+        }
+      }
+    });
+
+    // Position and scale the model (origin is at the pen tip)
+    model.position.set(3, 0, 0);
+    model.scale.set(0.5, 0.5, 0.5);
+
+    scene.add(model);
+  });
 
   // Event listeners
   window.addEventListener("mousedown", onMouseDown);
@@ -108,6 +150,11 @@ function onResize(canvas: HTMLCanvasElement): void {
 
 function animate(): void {
   requestAnimationFrame(animate);
+  
+  // Continuous slow rotation
+  if (model && !isMouseDown) {
+    model.rotation.y += 0.003;
+  }
+  
   renderer.render(scene, camera);
 }
-
