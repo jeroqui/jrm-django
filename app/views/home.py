@@ -23,3 +23,13 @@ def cv(request):
         schemaorg_type='Person',
     )
     return render(request, 'app/curriculum/curriculum.html', {'meta': meta})
+
+
+def narratives(request):
+    """Narratives/Stories coming soon page."""
+    meta = Meta(
+        title='Narrativa - Pròximament',
+        description='Secció de narrativa i histories - pròximament disponible.',
+        url=request.build_absolute_uri(),
+    )
+    return render(request, 'app/coming_soon.html', {'meta': meta})

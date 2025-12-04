@@ -1394,6 +1394,56 @@ a:not(.btn-link):hover {
   background: linear-gradient(135deg, rgba(61, 57, 138, 0.5) 0%, rgba(139, 69, 19, 0.3) 100%);
 }
 
+.coming-soon-page {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.coming-soon-page .coming-soon-content {
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 3rem;
+}
+.coming-soon-page .coming-soon-content h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  color: orange;
+}
+.coming-soon-page .coming-soon-content .subtitle {
+  font-size: 1.2rem;
+  opacity: 0.7;
+  margin-bottom: 2rem;
+  padding-left: 0;
+}
+.coming-soon-page .coming-soon-content .coming-soon-icon {
+  margin: 3rem 0;
+  color: orange;
+  opacity: 0.6;
+}
+.coming-soon-page .coming-soon-content .coming-soon-icon svg {
+  animation: pulse 2s ease-in-out infinite;
+}
+.coming-soon-page .coming-soon-content p {
+  padding-left: 0;
+  margin-bottom: 2rem;
+}
+.coming-soon-page .coming-soon-content .btn-link {
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
 html {
   background-color: rgb(34, 33, 59);
 }

@@ -7,6 +7,7 @@ urlpatterns = [
     # Home
     path('', views.home, name='home'),
     path('cv/', views.cv, name='cv'),
+    path('narrativa/', views.narratives, name='narratives'),
     
     # Auth
     path('login/', views.login_view, name='login'),
