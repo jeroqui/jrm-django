@@ -9,6 +9,77 @@
   border-top: 2px dashed orange;
 }
 
+// Objectius section
+.objectius-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.objectiu-card {
+  background: vars.$bg-color;
+  border: 1px solid vars.$bg-color-light;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  
+  &.confidential {
+    background: repeating-linear-gradient(
+      -45deg,
+      vars.$bg-color,
+      vars.$bg-color 10px,
+      darken(vars.$bg-color, 2%) 10px,
+      darken(vars.$bg-color, 2%) 20px
+    );
+    border: 2px solid vars.$primary-color;
+    
+    .confidential-stamp {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      font-size: 2rem;
+      font-weight: bold;
+      color: vars.$primary-color;
+      opacity: 0.8;
+      border: 4px solid vars.$primary-color;
+      padding: 0.5rem 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-family: monospace;
+      pointer-events: none;
+      z-index: 2;
+    }
+    
+    .confidential-content {
+      filter: blur(4px);
+      opacity: 0.5;
+      user-select: none;
+      
+      h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: vars.$text-color;
+      }
+      
+      p {
+        padding-left: 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: vars.$bg-color-light;
+        
+        &.hint {
+          font-size: 0.8rem;
+          margin-top: 1rem;
+          opacity: 0.7;
+        }
+      }
+    }
+  }
+}
+
 .background-video {
   width: 100%;
   height: 100%;
