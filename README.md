@@ -13,3 +13,9 @@ make supervisor-install
 # 3. Start the service
 make supervisor-start
 ```
+
+ON deploy also
+
+```bash
+make production-build
+```

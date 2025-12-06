@@ -63,13 +63,13 @@ COMPRESS_JS_FILTERS = [
 HTML_MINIFY = True
 EXCLUDE_FROM_MINIFYING = ['^admin/']
 
-# Whitenoise for static files
+# Whitenoise for static files (using simpler storage without manifest)
 STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
     },
 }
 
