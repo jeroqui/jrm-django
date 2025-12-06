@@ -18,10 +18,10 @@ sitemaps = {
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
-    path('__reload__/', include('django_browser_reload.urls')),
     path('', include('app.urls')),
 ]
 
-# Serve media files in development
+# Development-only URLs
 if settings.DEBUG:
+    urlpatterns += [path('__reload__/', include('django_browser_reload.urls'))]
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
