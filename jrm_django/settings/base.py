@@ -3,10 +3,18 @@ Base Django settings for jrm_django project.
 """
 
 from pathlib import Path
-from decouple import config, Csv
+from decouple import Config, RepositoryEnv, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Explicitly load .env from project root
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    config = Config(RepositoryEnv(str(env_path)))
+else:
+    # Fallback to default decouple behavior (env vars)
+    from decouple import config
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')

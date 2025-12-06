@@ -21,13 +21,26 @@ migrate:
 compress:
 	python manage.py compress --force
 
+# Production commands (use these on the server)
+prod-migrate:
+	DJANGO_SETTINGS_MODULE=jrm_django.settings.production python manage.py migrate
+
+prod-collectstatic:
+	DJANGO_SETTINGS_MODULE=jrm_django.settings.production python manage.py collectstatic --noinput --clear
+
+prod-compress:
+	DJANGO_SETTINGS_MODULE=jrm_django.settings.production python manage.py compress --force
+
+prod-superuser:
+	DJANGO_SETTINGS_MODULE=jrm_django.settings.production python manage.py createsuperuser
+
 # Install dependencies
 install:
 	pip install -r requirements.txt
 	npm install
 
-# Full production build
-production-build: build collectstatic compress
+# Full production build (run on server)
+production-build: build prod-collectstatic prod-compress
 
 # Run with gunicorn + uvicorn workers (production ASGI)
 serve:

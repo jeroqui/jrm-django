@@ -3,7 +3,7 @@ Production settings for jrm_django project.
 """
 
 from .base import *
-from decouple import config, Csv
+from .base import config  # Use the same config instance from base
 
 DEBUG = False
 
