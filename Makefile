@@ -6,7 +6,8 @@ dev:
 
 # Build frontend assets
 build:
-	npm run build
+	echo "npm not building for now..."
+# npm run build
 
 # Collect static files
 collectstatic:
