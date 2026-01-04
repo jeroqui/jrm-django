@@ -6,7 +6,7 @@ bind = "0.0.0.0:8083"
 backlog = 2048
 
 # Worker processes (using uvicorn workers for ASGI)
-workers = multiprocessing.cpu_count() * 2 + 1
+workers = 1
 worker_class = "uvicorn.workers.UvicornWorker"
 worker_connections = 1000
 timeout = 30
