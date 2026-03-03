@@ -1,0 +1,54 @@
+---
+description: Core project context and architecture for jrm-django
+alwaysApply: true
+---
+
+# Project: jrm-django
+
+Personal portfolio/website built with Django, migrated from a Go project.
+
+## Tech Stack
+
+- **Backend**: Django 5.x, PostgreSQL (production), SQLite (dev)
+- **Frontend**: Node.js build system (SCSS → CSS, TypeScript → JS via esbuild)
+- **3D Graphics**: Three.js with OBJ/MTL loader (`estilografica.obj` pen model)
+- **Rich Text**: Editor.js for blog post editing
+- **Deployment**: Gunicorn + Uvicorn workers (ASGI), Supervisor, Whitenoise
+- **Environment**: pyenv virtualenv (`jrmenv`), python-decouple for config
+
+## Key Features
+
+1. **Home page** - Hero with 3D pen model (draggable rotation), projects grid, "objectius" section
+2. **Blog** - Custom editor view with Editor.js, server-side rendering of content, publish/unpublish workflow
+3. **Projects section**:
+   - **De Que Va** - Radio section with database-managed episodes, audio player + external links
+   - **Doskvol Newspapers** - Standalone image gallery (doesn't extend base.html)
+   - **Ortografia** - Vue.js spelling game (standalone)
+   - **Curriculum/CV** - Vue.js CV (standalone)
+   - **Pomesagres** - Standalone project
+4. **SEO** - django-meta for OpenGraph, Twitter Cards, Schema.org
+5. **Custom User Model** - For future expansion
+
+## Architecture Rules
+
+- **Standalone projects don't extend `base.html`** to avoid CSS conflicts. They load their own complete HTML.
+- **Split settings**: `base.py`, `development.py`, `production.py` in `jrm_django/settings/`
+- **Custom template tags**: `{% svg %}`, `{% debug %}`, `{% render_editorjs %}` in `app/templatetags/`
+- **Static files** are compiled directly to `app/static/app/` (not a separate dist folder)
+- **Frontend source** lives in `frontend/src/` (scss/, ts/)
+- **Build commands**: `npm run build:css`, `npm run build:js`, `npm run watch`
+
+## Production Config
+
+- **Port**: 8083
+- **User**: root (on server)
+- **Supervisor config**: `/etc/supervisor/conf.d/jrm_django.conf`
+- **Gunicorn path**: `/root/.pyenv/versions/jrm-django/bin/gunicorn`
+- **Environment variables**: loaded from `.env` via python-decouple
+
+## Code Style
+
+- Models, views, etc. are organized in modules (e.g., `app/views/`, `app/models/`)
+- Templates follow Django conventions in `app/templates/app/`
+- SCSS uses variables defined in `_variables.scss`
+- TypeScript entry points are in `frontend/src/ts/`
