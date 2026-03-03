@@ -1,0 +1,16 @@
+---
+description: Ensure the Django project still starts after backend changes
+alwaysApply: true
+---
+
+# Django server health checks
+
+- After changing Django **urls, views, models, settings, or middleware**, always run a quick startup/health check.
+- Prefer running:
+  - `python manage.py check` to validate settings, imports, and models, **or**
+  - the full test suite when appropriate.
+- If `manage.py runserver` is already running and shows a traceback, **fix the error immediately** before continuing other work.
+- When adding new URLs or views, confirm that:
+  - The view is imported/exported correctly (e.g. via `app.views.__init__`), and
+  - The server can import `app.urls` without raising `AttributeError` or `ImportError`.
+

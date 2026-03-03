@@ -122,6 +122,61 @@
     gap: 1rem;
     align-items: flex-start;
   }
+
+  .habits-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .habit-detail-card {
+    padding: 1.5rem;
+    background: rgba(vars.$bg-color-light, 0.3);
+    border-radius: 8px;
+    border: 1px solid rgba(white, 0.1);
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.4rem;
+      margin: 0;
+      font-family: "Cormorant", serif;
+    }
+
+    .habit-description {
+      opacity: 0.8;
+      padding-left: 0;
+    }
+
+    .habit-reason {
+      padding-left: 0;
+      margin-top: 0.5rem;
+    }
+
+    .habit-completions {
+      margin-top: 0.75rem;
+
+      .habit-completion-dates {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin-left: 0.5rem;
+      }
+
+      .date-chip {
+        display: inline-block;
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        background: rgba(white, 0.06);
+      }
+    }
+  }
 }
 
 // Episodes list

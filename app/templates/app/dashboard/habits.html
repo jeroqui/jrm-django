@@ -1,0 +1,51 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Hàbits{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <a href="{% url 'app:dashboard' %}" class="back-link">← Tornar al dashboard</a>
+        <h1>Hàbits</h1>
+        <p class="intro">Configura els hàbits que vols seguir i el seu estat.</p>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2>Llista d'hàbits</h2>
+                    <div class="card-header-actions">
+                        <a href="{% url 'app:habit_day' %}" class="btn-link btn-secondary">Altres dies</a>
+                        <a href="{% url 'app:habit_create' %}" class="btn-link">+ Nou hàbit</a>
+                    </div>
+                </div>
+
+                {% if habits %}
+                <div class="card-list">
+                    {% for habit in habits %}
+                    <div class="card-list-item">
+                        <div class="item-title">
+                            <strong>{{ habit.name }}</strong>
+                            {% if habit.description %}
+                            <div class="sidenote">{{ habit.description }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="item-meta">
+                            <span class="badge">{{ habit.get_status_display }}</span>
+                            <a href="{% url 'app:habit_edit' habit.pk %}" class="btn-link btn-secondary">
+                                Edita
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="card-empty">
+                    <p>Encara no hi ha cap hàbit configurat.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

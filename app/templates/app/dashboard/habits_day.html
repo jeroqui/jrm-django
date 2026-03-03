@@ -1,0 +1,62 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Hàbits per dia{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <a href="{% url 'app:dashboard' %}" class="back-link">← Tornar al dashboard</a>
+
+        <div class="form-card episode-form">
+            <h1>Hàbits per dia</h1>
+            <p class="sidenote">
+                Tria una data per marcar quins hàbits es van completar aquell dia.
+            </p>
+
+            <form method="get" class="date-filter-form mb-3">
+                <div class="form-group">
+                    <label for="date">Data</label>
+                    <input
+                        id="date"
+                        name="date"
+                        type="date"
+                        class="form-input"
+                        value="{{ selected_date|date:'Y-m-d' }}"
+                    >
+                </div>
+                <button type="submit" class="btn-link btn-secondary">Canvia dia</button>
+            </form>
+
+            {% if day_habits %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+                <ul class="habits-today-list">
+                    {% for habit in day_habits %}
+                    <li class="habit-item">
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="completed_habits"
+                                value="{{ habit.id }}"
+                                {% if habit.completed %}checked{% endif %}
+                            >
+                            <span class="habit-name">{{ habit.name }}</span>
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <button type="submit" class="btn-link btn-secondary">
+                    Desa hàbits per al {{ selected_date|date:"d/m/Y" }}
+                </button>
+            </form>
+            {% else %}
+            <p class="sidenote">
+                No hi ha hàbits actius per a aquesta data.
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

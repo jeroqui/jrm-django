@@ -1,0 +1,124 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Jacob's Habits{% endblock %}
+
+{% block content %}
+<div class="project-page">
+    <div class="project-header">
+        <div class="section">
+            <a href="{% url 'app:projects' %}" class="back-link">← Tornar als projectes</a>
+            <div class="project-category">personal / hàbits</div>
+            <h1>Jacob's Habits</h1>
+            <p class="tagline">
+                Un calendari tipus GitHub que mostra quants hàbits diaris he completat cada dia.
+            </p>
+        </div>
+    </div>
+
+    <div class="section">
+        <section>
+            <div class="section-header">
+                <h2>Calendari d'hàbits</h2>
+            </div>
+
+            {% if calendar_weeks %}
+            <div class="habit-calendar">
+                <div class="habit-calendar-grid">
+                    {% for week in calendar_weeks %}
+                    <div class="habit-week">
+                        {% for day in week %}
+                        {% if day %}
+                        <div
+                            class="habit-day {{ day.level }}"
+                            title="{{ day.date }} · {{ day.completed_habits }}/{{ day.total_habits }} hàbits completats"
+                        ></div>
+                        {% else %}
+                        <div class="habit-day empty"></div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="habit-legend">
+                    <span class="legend-label">Més dies amb hàbits complets →</span>
+                    <div class="legend-levels">
+                        <span class="habit-day empty"></span>
+                        <span class="habit-day level-0"></span>
+                        <span class="habit-day level-1"></span>
+                        <span class="habit-day level-2"></span>
+                        <span class="habit-day level-3"></span>
+                        <span class="habit-day level-4"></span>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="sidenote">
+                Encara no hi ha dades d'hàbits. Configura'ls des del dashboard.
+            </p>
+            {% endif %}
+        </section>
+
+        <section>
+            <div class="section-header">
+                <h2>Detall dels hàbits</h2>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'app:habit_list' %}" class="btn-link btn-secondary">
+                    Gestiona hàbits
+                </a>
+                {% endif %}
+            </div>
+
+            {% if habits %}
+            <div class="habits-detail-list">
+                {% for habit in habits %}
+                <article class="habit-detail-card">
+                    <header>
+                        <h3>{{ habit.name }}</h3>
+                        <span class="badge">{{ habit.get_status_display }}</span>
+                    </header>
+                    {% if habit.description %}
+                    <p class="habit-description">{{ habit.description }}</p>
+                    {% endif %}
+
+                    <p class="sidenote">
+                        Actiu des de {{ habit.start_date|date:"d/m/Y" }}
+                        {% if habit.end_date %}
+                            fins {{ habit.end_date|date:"d/m/Y" }}
+                        {% else %}
+                            (encara actiu)
+                        {% endif %}
+                    </p>
+
+                    {% if habit.status_reason %}
+                    <p class="habit-reason">
+                        <strong>Motiu:</strong> {{ habit.status_reason }}
+                    </p>
+                    {% endif %}
+
+                    <div class="habit-completions">
+                        <strong>Dies completat:</strong>
+                        {% with comps=habit.completions.all %}
+                            {% if comps %}
+                            <span class="habit-completion-dates">
+                                {% for c in comps %}
+                                    <span class="date-chip">{{ c.date|date:"d/m" }}</span>
+                                {% endfor %}
+                            </span>
+                            {% else %}
+                            <span class="sidenote">Encara no s'ha completat cap dia.</span>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="sidenote">Encara no hi ha cap hàbit configurat.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}
+

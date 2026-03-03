@@ -26,7 +26,7 @@
                     <h2>Blog Posts</h2>
                     <a href="{% url 'app:blog_new' %}" class="btn-link">+ Nou</a>
                 </div>
-                
+
                 <div class="card-stats">
                     <div class="stat">
                         <span class="stat-value">{{ total_posts }}</span>
@@ -71,7 +71,7 @@
                     <h2>De Que Va</h2>
                     <a href="{% url 'app:episode_create' %}" class="btn-link">+ Nou</a>
                 </div>
-                
+
                 <div class="card-stats">
                     <div class="stat">
                         <span class="stat-value">{{ episodes_count }}</span>
@@ -92,6 +92,47 @@
                 {% else %}
                 <div class="card-empty">
                     <p>Cap episodi encara</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Habits Today Card -->
+            <div class="dashboard-card dashboard-habits-card">
+                <div class="card-header">
+                    <h2>Hàbits d'avui</h2>
+                    <div class="card-header-actions">
+                        <a href="{% url 'app:habit_day' %}" class="btn-link btn-secondary">Altres dies</a>
+                        <a href="{% url 'app:habit_list' %}" class="btn-link">Gestiona</a>
+                    </div>
+                </div>
+
+                {% if today_habits %}
+                <form method="post" class="habits-today-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="habits_today">
+                    <ul class="habits-today-list">
+                        {% for habit in today_habits %}
+                        <li class="habit-item">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="completed_habits"
+                                    value="{{ habit.id }}"
+                                    {% if habit.completed %}checked{% endif %}
+                                >
+                                <span class="habit-name">{{ habit.name }}</span>
+                            </label>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <button type="submit" class="btn-link btn-secondary">
+                        Desa hàbits d'avui
+                    </button>
+                </form>
+                {% else %}
+                <div class="card-empty">
+                    <p>Cap hàbit actiu avui.</p>
+                    <p class="sidenote">Crea i configura hàbits des de la secció d'hàbits.</p>
                 </div>
                 {% endif %}
             </div>
