@@ -30,8 +30,8 @@
                         {% for day in week %}
                         {% if day %}
                         <div
-                            class="habit-day {{ day.level }}"
-                            title="{{ day.date }} · {{ day.completed_habits }}/{{ day.total_habits }} hàbits completats"
+                            class="habit-day {{ day.level }}{% if day.starting_habits %} has-start{% endif %}{% if day.ending_habits %} has-end{% endif %}"
+                            title="{{ day.date }} · {{ day.completed_habits }}/{{ day.total_habits }} hàbits completats{% if day.starting_habits %} &#10;Iniciats: {{ day.starting_habits|join:', ' }}{% endif %}{% if day.ending_habits %} &#10;Acabats: {{ day.ending_habits|join:', ' }}{% endif %}"
                         ></div>
                         {% else %}
                         <div class="habit-day empty"></div>
@@ -98,18 +98,19 @@
                     {% endif %}
 
                     <div class="habit-completions">
-                        <strong>Dies completat:</strong>
-                        {% with comps=habit.completions.all %}
-                            {% if comps %}
-                            <span class="habit-completion-dates">
-                                {% for c in comps %}
-                                    <span class="date-chip">{{ c.date|date:"d/m" }}</span>
-                                {% endfor %}
-                            </span>
-                            {% else %}
-                            <span class="sidenote">Encara no s'ha completat cap dia.</span>
-                            {% endif %}
-                        {% endwith %}
+                        <strong>Últims 7 dies:</strong>
+                        {% if habit.recent_days %}
+                        <div class="habit-recent-strip">
+                            {% for day in habit.recent_days %}
+                            <div
+                                class="habit-day {% if day.completed %}level-4{% else %}level-0{% endif %}"
+                                title="{{ day.date|date:'d/m/Y' }}{% if day.completed %} · completat{% else %} · no completat{% endif %}"
+                            ></div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <span class="sidenote">Encara no hi ha dades.</span>
+                        {% endif %}
                     </div>
                 </article>
                 {% endfor %}

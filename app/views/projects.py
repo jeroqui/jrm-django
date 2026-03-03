@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from django.utils import timezone
 from meta.views import Meta
 
 from app.models import DeQueVaEpisode, Habit
@@ -124,6 +127,23 @@ def project_jacobs_habits(request):
         summaries = build_habit_calendar(user=owner)
         weeks = group_calendar_by_week(summaries)
         habits = Habit.objects.filter(user=owner).prefetch_related("completions")
+
+        today = timezone.localdate()
+        last_seven_days = [
+            today - timedelta(days=offset) for offset in range(6, -1, -1)
+        ]
+
+        for habit in habits:
+            completed_dates = {
+                c.date for c in habit.completions.all() if c.completed
+            }
+            habit.recent_days = [
+                {
+                    "date": day,
+                    "completed": day in completed_dates,
+                }
+                for day in last_seven_days
+            ]
 
     meta = Meta(
         title="Jacob's Habits",

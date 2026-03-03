@@ -14,6 +14,8 @@ class DaySummary:
     date: date
     total_habits: int
     completed_habits: int
+    starting_habits: List[str]
+    ending_habits: List[str]
 
     @property
     def completion_rate(self) -> Optional[float]:
@@ -74,6 +76,14 @@ def build_habit_calendar(user, days: int = 365, today: Optional[date] = None) ->
         for completion in habit.completions.all():
             completions_by_day.setdefault(completion.date, set()).add(habit.id)
 
+    starts_by_day: dict[date, list[str]] = {}
+    ends_by_day: dict[date, list[str]] = {}
+    for habit in habits:
+        if start_date <= habit.start_date <= today:
+            starts_by_day.setdefault(habit.start_date, []).append(habit.name)
+        if habit.end_date and start_date <= habit.end_date <= today:
+            ends_by_day.setdefault(habit.end_date, []).append(habit.name)
+
     summaries: List[DaySummary] = []
     for day in _date_range(start_date, today):
         active_habits = [h for h in habits if h.is_active_on(day)]
@@ -88,6 +98,8 @@ def build_habit_calendar(user, days: int = 365, today: Optional[date] = None) ->
                 date=day,
                 total_habits=total,
                 completed_habits=completed,
+                starting_habits=starts_by_day.get(day, []),
+                ending_habits=ends_by_day.get(day, []),
             )
         )
 

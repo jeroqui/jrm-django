@@ -24,6 +24,7 @@
   height: 12px;
   border-radius: 2px;
   background: rgba(white, 0.04);
+  border: 1px solid transparent;
 
   &.empty {
     background: rgba(white, 0.06);
@@ -48,6 +49,18 @@
 
   &.level-4 {
     background: rgba(vars.$primary-color, 0.95);
+  }
+
+  &.has-start {
+    border-color: #4caf50; // green
+  }
+
+  &.has-end {
+    border-color: #e53935; // red
+  }
+
+  &.has-start.has-end {
+    border-color: #ffeb3b; // both start and end on same day
   }
 }
 

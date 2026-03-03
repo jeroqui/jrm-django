@@ -42,6 +42,7 @@ install:
 # Full production build (run on server)
 production-build: build prod-collectstatic prod-compress
 
+
 # Run with gunicorn + uvicorn workers (production ASGI)
 serve:
 	DJANGO_SETTINGS_MODULE=jrm_django.settings.production gunicorn jrm_django.asgi:application -c gunicorn.conf.py
@@ -80,3 +81,4 @@ supervisor-status:
 supervisor-logs:
 	sudo tail -f /var/log/supervisor/jrm_django.log
 
+deploy: prod-collectstatic prod-compress supervisor-restart
