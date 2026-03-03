@@ -1,0 +1,52 @@
+// ==========================================================================
+// Spacing Helpers (Bulma-like)
+// ==========================================================================
+
+$spacing-scale: (
+  0: 0,
+  1: 0.25rem,
+  2: 0.5rem,
+  3: 0.75rem,
+  4: 1rem,
+  5: 1.5rem,
+  6: 3rem,
+  7: 4rem,
+);
+
+@mixin generate-spacing-classes($property, $prefix) {
+  @each $key, $size in $spacing-scale {
+    .#{$prefix}-#{$key} {
+      #{$property}: $size !important;
+    }
+
+    .#{$prefix}t-#{$key} {
+      #{$property}-top: $size !important;
+    }
+
+    .#{$prefix}r-#{$key} {
+      #{$property}-right: $size !important;
+    }
+
+    .#{$prefix}b-#{$key} {
+      #{$property}-bottom: $size !important;
+    }
+
+    .#{$prefix}l-#{$key} {
+      #{$property}-left: $size !important;
+    }
+
+    .#{$prefix}x-#{$key} {
+      #{$property}-left: $size !important;
+      #{$property}-right: $size !important;
+    }
+
+    .#{$prefix}y-#{$key} {
+      #{$property}-top: $size !important;
+      #{$property}-bottom: $size !important;
+    }
+  }
+}
+
+@include generate-spacing-classes(margin, "m");
+@include generate-spacing-classes(padding, "p");
+
