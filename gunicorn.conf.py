@@ -2,7 +2,7 @@
 import multiprocessing
 
 # Server socket
-bind = "0.0.0.0:8083"
+bind = "127.0.0.1:8083"
 backlog = 2048
 
 # Worker processes (using uvicorn workers for ASGI)
