@@ -29,15 +29,15 @@ class DaySummary:
         Map completion rate to a discrete level for calendar coloring.
         """
         rate = self.completion_rate
-        if rate is None:
+        if rate is None or rate == 0:
             return "empty"
-        if rate == 0:
+        if rate <= 0.2:
             return "level-0"
-        if rate <= 0.25:
+        if rate <= 0.4:
             return "level-1"
-        if rate <= 0.5:
+        if rate <= 0.6:
             return "level-2"
-        if rate <= 0.75:
+        if rate <= 0.8:
             return "level-3"
         return "level-4"
 
