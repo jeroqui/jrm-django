@@ -7,7 +7,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from app.forms import DeQueVaEpisodeForm, HabitForm
-from app.models import DeQueVaEpisode, Habit, HabitCompletion, Post
+from app.models import DeQueVaEpisode, Habit, Post
+from app.services.habits import get_habit_checkoff_state
 
 
 @login_required
@@ -21,49 +22,15 @@ def dashboard(request):
     episodes_count = DeQueVaEpisode.objects.count()
 
     today = timezone.localdate()
-    habits_qs = Habit.objects.filter(user=request.user).order_by("name")
-    active_habits = [h for h in habits_qs if h.is_active_on(today)]
-
-    existing_completions = {
-        c.habit_id: c
-        for c in HabitCompletion.objects.filter(
-            habit__in=active_habits, date=today
-        )
-    }
-
-    if request.method == "POST" and request.POST.get("form_type") == "habits_today":
-        selected_ids = {
-            int(hid) for hid in request.POST.getlist("completed_habits")
-        }
-
-        for habit in active_habits:
-            completed = habit.id in selected_ids
-            completion = existing_completions.get(habit.id)
-            if completion:
-                if completion.completed != completed:
-                    completion.completed = completed
-                    completion.save(update_fields=["completed"])
-            else:
-                HabitCompletion.objects.create(
-                    habit=habit,
-                    date=today,
-                    completed=completed,
-                )
-
+    checkoff = get_habit_checkoff_state(
+        request=request,
+        user=request.user,
+        target_date=today,
+        expected_form_type="habits_today",
+    )
+    if checkoff.was_submitted:
         messages.success(request, "Hàbits d'avui actualitzats.")
         return redirect("app:dashboard")
-
-    today_habits = [
-        {
-            "id": habit.id,
-            "name": habit.name,
-            "completed": bool(
-                existing_completions.get(habit.id)
-                and existing_completions[habit.id].completed
-            ),
-        }
-        for habit in active_habits
-    ]
 
     context = {
         "posts": posts[:5],
@@ -72,7 +39,7 @@ def dashboard(request):
         "total_posts": posts.count(),
         "episodes": episodes,
         "episodes_count": episodes_count,
-        "today_habits": today_habits,
+        "today_habits": checkoff.habits,
         "today": today,
     }
 
@@ -155,12 +122,25 @@ def episode_delete(request, pk):
 @login_required
 def habit_list(request):
     """List and manage habits for the current user."""
+    today = timezone.localdate()
     habits = Habit.objects.filter(user=request.user).order_by("name")
+    checkoff = get_habit_checkoff_state(
+        request=request,
+        user=request.user,
+        target_date=today,
+        expected_form_type="habits_today_manage",
+    )
+    if checkoff.was_submitted:
+        messages.success(request, "Hàbits d'avui actualitzats.")
+        return redirect("app:habit_list")
+
     return render(
         request,
         "app/dashboard/habits.html",
         {
             "habits": habits,
+            "today_habits": checkoff.habits,
+            "today": today,
         },
     )
 
@@ -237,36 +217,13 @@ def habit_day(request):
     except ValueError:
         selected_date = timezone.localdate()
 
-    habits_qs = Habit.objects.filter(user=request.user).order_by("name")
-    active_habits = [h for h in habits_qs if h.is_active_on(selected_date)]
-
-    existing_completions = {
-        c.habit_id: c
-        for c in HabitCompletion.objects.filter(
-            habit__in=active_habits,
-            date=selected_date,
-        )
-    }
-
-    if request.method == "POST":
-        selected_ids = {
-            int(hid) for hid in request.POST.getlist("completed_habits")
-        }
-
-        for habit in active_habits:
-            completed = habit.id in selected_ids
-            completion = existing_completions.get(habit.id)
-            if completion:
-                if completion.completed != completed:
-                    completion.completed = completed
-                    completion.save(update_fields=["completed"])
-            else:
-                HabitCompletion.objects.create(
-                    habit=habit,
-                    date=selected_date,
-                    completed=completed,
-                )
-
+    checkoff = get_habit_checkoff_state(
+        request=request,
+        user=request.user,
+        target_date=selected_date,
+        expected_form_type=None,
+    )
+    if checkoff.was_submitted:
         messages.success(
             request,
             f"Hàbits actualitzats per al dia {selected_date.isoformat()}.",
@@ -275,23 +232,11 @@ def habit_day(request):
             f"{reverse('app:habit_day')}?date={selected_date.isoformat()}"
         )
 
-    day_habits = [
-        {
-            "id": habit.id,
-            "name": habit.name,
-            "completed": bool(
-                existing_completions.get(habit.id)
-                and existing_completions[habit.id].completed
-            ),
-        }
-        for habit in active_habits
-    ]
-
     return render(
         request,
         "app/dashboard/habits_day.html",
         {
             "selected_date": selected_date,
-            "day_habits": day_habits,
+            "day_habits": checkoff.habits,
         },
     )

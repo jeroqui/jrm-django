@@ -42,6 +42,88 @@ class DaySummary:
         return "level-4"
 
 
+@dataclass
+class HabitCheckoffState:
+    target_date: date
+    habits: List[dict]
+    was_submitted: bool
+
+
+def get_habit_checkoff_state(
+    *,
+    request,
+    user,
+    target_date: date,
+    expected_form_type: Optional[str] = None,
+) -> HabitCheckoffState:
+    """
+    Build and optionally process a habit checkoff form for a given day.
+
+    If request is POST and form type matches (or expected_form_type is None),
+    completions are upserted for active habits on target_date.
+    """
+    habits_qs = Habit.objects.filter(user=user).order_by("name")
+    active_habits = [h for h in habits_qs if h.is_active_on(target_date)]
+
+    existing_completions = {
+        c.habit_id: c
+        for c in HabitCompletion.objects.filter(
+            habit__in=active_habits,
+            date=target_date,
+        )
+    }
+
+    should_process = request.method == "POST"
+    if should_process and expected_form_type is not None:
+        should_process = request.POST.get("form_type") == expected_form_type
+
+    if should_process:
+        selected_ids = {
+            int(hid) for hid in request.POST.getlist("completed_habits")
+        }
+
+        for habit in active_habits:
+            completed = habit.id in selected_ids
+            completion = existing_completions.get(habit.id)
+            if completion:
+                if completion.completed != completed:
+                    completion.completed = completed
+                    completion.save(update_fields=["completed"])
+            else:
+                HabitCompletion.objects.create(
+                    habit=habit,
+                    date=target_date,
+                    completed=completed,
+                )
+
+        # Refresh after writes so rendered state is accurate.
+        existing_completions = {
+            c.habit_id: c
+            for c in HabitCompletion.objects.filter(
+                habit__in=active_habits,
+                date=target_date,
+            )
+        }
+
+    habits = [
+        {
+            "id": habit.id,
+            "name": habit.name,
+            "completed": bool(
+                existing_completions.get(habit.id)
+                and existing_completions[habit.id].completed
+            ),
+        }
+        for habit in active_habits
+    ]
+
+    return HabitCheckoffState(
+        target_date=target_date,
+        habits=habits,
+        was_submitted=should_process,
+    )
+
+
 def _date_range(start: date, end: date) -> Iterable[date]:
     current = start
     while current <= end:
