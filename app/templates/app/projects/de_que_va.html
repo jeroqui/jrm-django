@@ -80,6 +80,17 @@
                 </div>
                 {% endfor %}
             </div>
+            {% if episodes.has_other_pages %}
+            <div class="pagination">
+                {% if episodes.has_previous %}
+                <a href="?page={{ episodes.previous_page_number }}" class="btn-link">← Anterior</a>
+                {% endif %}
+                <span class="page-info">{{ episodes.number }} / {{ episodes.paginator.num_pages }}</span>
+                {% if episodes.has_next %}
+                <a href="?page={{ episodes.next_page_number }}" class="btn-link">Següent →</a>
+                {% endif %}
+            </div>
+            {% endif %}
             {% else %}
             <div class="empty-state">
                 <p>Pròximament...</p>

@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.utils import timezone
 from meta.views import Meta
@@ -23,7 +24,8 @@ def projects_index(request):
 
 def project_de_que_va(request):
     """De Que Va - Radio section project page."""
-    episodes = DeQueVaEpisode.objects.all()[:10]
+    paginator = Paginator(DeQueVaEpisode.objects.all(), 10)
+    episodes = paginator.get_page(request.GET.get("page", 1))
 
     meta = Meta(
         title="De Que Va",

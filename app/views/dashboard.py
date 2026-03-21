@@ -2,6 +2,7 @@ from datetime import date
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -49,8 +50,9 @@ def dashboard(request):
 @login_required
 def episode_list(request):
     """List all De Que Va episodes."""
-    episodes = DeQueVaEpisode.objects.all()
-    return render(request, "app/dashboard/episodes.html", {"episodes": episodes})
+    paginator = Paginator(DeQueVaEpisode.objects.all(), 20)
+    page = paginator.get_page(request.GET.get("page", 1))
+    return render(request, "app/dashboard/episodes.html", {"episodes": page})
 
 
 @login_required

@@ -45,6 +45,40 @@ class EpisodeListViewTests(TestCase):
         self.assertContains(response, "Episode one")
         self.assertContains(response, "Episode two")
 
+    def test_list_paginates_at_20(self):
+        for i in range(25):
+            _make_episode(title=f"Episode {i}", date=date(2024, 1, 1), episode_number=i)
+        response = self.client.get(reverse("app:episode_list"))
+        self.assertEqual(len(response.context["episodes"].object_list), 20)
+        response_p2 = self.client.get(reverse("app:episode_list"), {"page": 2})
+        self.assertEqual(len(response_p2.context["episodes"].object_list), 5)
+
+    def test_list_invalid_page_returns_last(self):
+        for i in range(5):
+            _make_episode(title=f"Episode {i}", date=date(2024, 1, 1), episode_number=i)
+        response = self.client.get(reverse("app:episode_list"), {"page": 999})
+        self.assertEqual(response.status_code, 200)
+
+
+class PublicDeQueVaPageTests(TestCase):
+    def test_page_renders(self):
+        response = self.client.get(reverse("app:project_de_que_va"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_paginates_at_10(self):
+        for i in range(15):
+            _make_episode(title=f"Episode {i}", date=date(2024, 1, 1), episode_number=i)
+        response = self.client.get(reverse("app:project_de_que_va"))
+        self.assertEqual(len(response.context["episodes"].object_list), 10)
+        response_p2 = self.client.get(reverse("app:project_de_que_va"), {"page": 2})
+        self.assertEqual(len(response_p2.context["episodes"].object_list), 5)
+
+    def test_invalid_page_returns_last(self):
+        for i in range(5):
+            _make_episode(title=f"Episode {i}", date=date(2024, 1, 1), episode_number=i)
+        response = self.client.get(reverse("app:project_de_que_va"), {"page": 999})
+        self.assertEqual(response.status_code, 200)
+
 
 class EpisodeCreateViewTests(TestCase):
     def setUp(self):
