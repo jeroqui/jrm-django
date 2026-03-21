@@ -1,4 +1,4 @@
-<nav class="navbar">
+<nav class="navbar" id="navbar">
     <div class="navbar-container">
         <div class="navbar-left">
             <a href="{% url 'app:dashboard' %}" class="navbar-btn">/dashboard</a>
@@ -13,6 +13,22 @@
             <a href="{% url 'app:login' %}" class="navbar-btn">Login</a>
             {% endif %}
         </div>
+        <button class="navbar-hamburger" aria-label="Toggle menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="navbar-mobile-menu">
+        <a href="{% url 'app:dashboard' %}" class="navbar-btn">/dashboard</a>
+        <a href="{% url 'app:habit_list' %}" class="navbar-btn">/habits</a>
+        <a href="{% url 'app:episode_list' %}" class="navbar-btn">/episodes</a>
+        <a href="{% url 'app:projects' %}" class="navbar-btn">/projects</a>
+        <div class="navbar-mobile-divider"></div>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'app:logout' %}" class="navbar-btn">Logout</a>
+        {% else %}
+        <a href="{% url 'app:login' %}" class="navbar-btn">Login</a>
+        {% endif %}
     </div>
 </nav>
-

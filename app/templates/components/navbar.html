@@ -1,4 +1,4 @@
-<nav class="navbar">
+<nav class="navbar" id="navbar">
     <div class="navbar-container">
         <div class="navbar-left">
             <a href="{% url 'app:home' %}" class="navbar-btn">/</a>
@@ -6,17 +6,19 @@
             <a href="{% url 'app:projects' %}" class="navbar-btn">/projects</a>
         </div>
         <div class="navbar-right">
-            <div class="dropdown-wrapper">
-                <button class="navbar-btn" onclick="this.parentElement.classList.toggle('open')">
-                    Lang
-                </button>
-                <div class="dropdown glass-card">
-                    <span class="selected">catspanglish</span>
-                    <div class="info">
-                        <p>Barrejo tots els idiomes que coneixo com em surt de la fava. Si no t'agrada. <a href="https://tenor.com/view/brooklyn-nine-nine-deal-with-it-amy-santiago-b99-brooklyn99-gif-18387659"><i>Deal with it</i></a></p>
-                    </div>
-                </div>
-            </div>
+            {% include 'components/lang_dropdown.html' %}
         </div>
+        <button class="navbar-hamburger" aria-label="Toggle menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="navbar-mobile-menu">
+        <a href="{% url 'app:home' %}" class="navbar-btn">/</a>
+        <a href="{% url 'app:blog_list' %}" class="navbar-btn">/blog</a>
+        <a href="{% url 'app:projects' %}" class="navbar-btn">/projects</a>
+        <div class="navbar-mobile-divider"></div>
+        {% include 'components/lang_dropdown.html' with label="lang: catspanglish" %}
     </div>
 </nav>

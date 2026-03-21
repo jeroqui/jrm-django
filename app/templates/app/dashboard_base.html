@@ -27,6 +27,9 @@
         {% block content %}{% endblock %}
     </div>
 
+    {% compress js %}
+    <script src="{% static 'app/js/main.js' %}" defer></script>
+    {% endcompress %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>
