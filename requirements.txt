@@ -24,3 +24,4 @@ whitenoise==6.8.2
 
 # PostgreSQL (optional, for production)
 psycopg2-binary==2.9.10
+mutagen==1.47.0

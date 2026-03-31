@@ -58,16 +58,31 @@
                     </div>
                     <h3>{{ episode.title }}</h3>
                     {% if episode.description %}
-                    <p>{{ episode.description }}</p>
+                    <p>{{ episode.description|urlize }}</p>
                     {% endif %}
                     
                     <div class="episode-actions">
                         {% if episode.audio_clip %}
-                        <div class="audio-player">
-                            <audio controls preload="metadata">
-                                <source src="{{ episode.audio_clip.url }}" type="audio/mpeg">
-                                El teu navegador no suporta l'element d'àudio.
-                            </audio>
+                        <div class="audio-player"
+                             data-src="{{ episode.audio_clip.url }}"
+                             data-duration="{{ episode.duration_seconds|default:0 }}">
+                            <button class="ap-btn" aria-label="Reproduir/Pausar">
+                                <svg class="ap-icon-play" viewBox="0 0 10 12" width="10" height="12" fill="currentColor" aria-hidden="true">
+                                    <path d="M0 0 L10 6 L0 12 Z"/>
+                                </svg>
+                                <svg class="ap-icon-pause" viewBox="0 0 10 12" width="10" height="12" fill="currentColor" aria-hidden="true">
+                                    <rect x="0" y="0" width="3.5" height="12"/>
+                                    <rect x="6.5" y="0" width="3.5" height="12"/>
+                                </svg>
+                            </button>
+                            <div class="ap-body">
+                                <div class="ap-bar"><div class="ap-bar-fill"></div></div>
+                                <div class="ap-times">
+                                    <span class="ap-current">0:00</span>
+                                    <span>/</span>
+                                    <span class="ap-duration">{{ episode.duration_display }}</span>
+                                </div>
+                            </div>
                         </div>
                         {% endif %}
                         
