@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 
 from . import views
 
@@ -63,6 +64,12 @@ urlpatterns = [
         views.project_jacobs_habits,
         name="project_jacobs_habits",
     ),
+
+    # Legacy redirects (old Go site URLs indexed by Google)
+    path("projectes/", RedirectView.as_view(url="/projects/", permanent=True)),
+    path("pomesagres/", RedirectView.as_view(url="/projects/pomesagres/", permanent=True)),
+    path("pomesagres", RedirectView.as_view(url="/projects/pomesagres/", permanent=True)),
+    path("projectes/tools/ortografia", RedirectView.as_view(url="/projects/ortografia/", permanent=True)),
 
     # Blog
     path("blog/", views.blog_list, name="blog_list"),
