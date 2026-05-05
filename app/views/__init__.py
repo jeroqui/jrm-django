@@ -10,6 +10,9 @@ from .tasks import (
     task_group_list,
     task_group_edit,
     task_group_delete,
+    task_api_create,
+    task_api_complete,
+    task_api_discard,
 )
 from .blog import (
     blog_detail,
@@ -77,4 +80,7 @@ __all__ = [
     "task_group_list",
     "task_group_edit",
     "task_group_delete",
+    "task_api_create",
+    "task_api_complete",
+    "task_api_discard",
 ]

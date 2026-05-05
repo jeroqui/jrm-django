@@ -1,5 +1,5 @@
-{% load task_tags %}
 <div class="task-node{% if node.task.status != 'pending' %} task-done{% endif %}"
+     data-task-id="{{ node.task.pk }}"
      style="padding-left: {{ node.indent_rem }}rem">
     <div class="task-item">
         {% if node.task.group %}
@@ -15,20 +15,27 @@
         {% endif %}
         {% if node.task.status == 'pending' %}
         <div class="task-actions">
-            <form method="post" action="{% url 'app:task_complete' node.task.pk %}" class="task-action-form">
-                {% csrf_token %}
-                <button type="submit" class="btn-link btn-small" title="Completar">✓</button>
-            </form>
+            <button
+                type="button"
+                class="btn-link btn-small js-complete-btn"
+                data-complete-url="{% url 'app:task_api_complete' node.task.pk %}"
+                title="Completar"
+            >✓</button>
             <button
                 type="button"
                 class="btn-link btn-small btn-secondary js-discard-trigger"
                 data-task-id="{{ node.task.pk }}"
                 data-task-title="{{ node.task.title }}"
-                data-discard-url="{% url 'app:task_discard' node.task.pk %}"
+                data-discard-url="{% url 'app:task_api_discard' node.task.pk %}"
                 title="Descartar"
             >✗</button>
-            <a href="{% url 'app:task_create' %}?parent={{ node.task.pk }}&date={{ node.task.scheduled_date|date:'Y-m-d' }}"
-               class="btn-link btn-small btn-secondary" title="Afegir subtasca">+</a>
+            <button
+                type="button"
+                class="btn-link btn-small btn-secondary js-add-subtask"
+                data-task-id="{{ node.task.pk }}"
+                data-date="{{ node.task.scheduled_date|date:'Y-m-d' }}"
+                title="Afegir subtasca"
+            >+</button>
             <a href="{% url 'app:task_edit' node.task.pk %}" class="btn-link btn-small btn-secondary" title="Editar">···</a>
         </div>
         {% endif %}

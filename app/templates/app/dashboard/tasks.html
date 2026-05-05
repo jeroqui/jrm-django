@@ -1,5 +1,4 @@
 {% extends 'app/dashboard_base.html' %}
-{% load task_tags %}
 
 {% block title %}Tasques{% endblock %}
 
@@ -9,36 +8,55 @@
         <a href="{% url 'app:dashboard' %}" class="back-link">← Tornar al dashboard</a>
         <h1>Tasques</h1>
 
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="message {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
+        <div class="dashboard-grid tasks-grid">
+            <div class="dashboard-card tasks-card">
                 <div class="card-header">
                     <h2>Avui · {{ today|date:"d/m/Y" }}</h2>
                     <div class="card-header-actions">
                         <a href="{% url 'app:task_stats' %}" class="btn-link btn-secondary">Estadístiques</a>
                         <a href="{% url 'app:task_group_list' %}" class="btn-link btn-secondary">Grups</a>
-                        <a href="{% url 'app:task_create' %}?date={{ today|date:'Y-m-d' }}" class="btn-link">+ Nova tasca</a>
                     </div>
                 </div>
 
-                {% if nodes %}
-                <div class="task-tree">
-                    {% for node in nodes %}
-                    {% include 'app/dashboard/_task_node.html' with node=node %}
-                    {% endfor %}
+                <!-- Quick-add form -->
+                <form
+                    class="task-quick-add"
+                    id="task-quick-add"
+                    data-create-url="{% url 'app:task_api_create' %}"
+                    data-scheduled-date="{{ today|date:'Y-m-d' }}"
+                >
+                    {% csrf_token %}
+                    <input
+                        type="text"
+                        name="title"
+                        class="form-input task-quick-input"
+                        placeholder="Nova tasca…"
+                        autocomplete="off"
+                        autofocus
+                    >
+                    {% if groups %}
+                    <select name="group" class="form-input task-quick-group">
+                        <option value="">Sense grup</option>
+                        {% for group in groups %}
+                        <option value="{{ group.pk }}" data-color="{{ group.color }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                    <button type="submit" class="btn-link task-quick-submit" title="Afegir tasca">+</button>
+                </form>
+
+                <!-- Task tree -->
+                <div class="task-tree" id="task-tree">
+                    {% if nodes %}
+                        {% for node in nodes %}
+                        {% include 'app/dashboard/_task_node.html' with node=node %}
+                        {% endfor %}
+                    {% else %}
+                    <div class="card-empty" id="task-empty-state">
+                        <p>Cap tasca per avui. Afegeix-ne una!</p>
+                    </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="card-empty">
-                    <p>Cap tasca per avui.</p>
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -50,23 +68,20 @@
     <div class="modal-box">
         <h3>Descartar tasca</h3>
         <p class="modal-task-title" id="modal-task-title"></p>
-        <form method="post" id="task-discard-form">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="modal-reason">Motiu</label>
-                <textarea
-                    name="reason"
-                    id="modal-reason"
-                    class="form-input"
-                    rows="3"
-                    placeholder="Per què descartes aquesta tasca?"
-                ></textarea>
-            </div>
-            <div class="form-actions modal-actions">
-                <button type="button" class="btn-link btn-secondary" id="modal-cancel">Cancel·lar</button>
-                <button type="submit" class="btn-link btn-danger">Descartar</button>
-            </div>
-        </form>
+        <div class="form-group">
+            <label for="modal-reason">Motiu</label>
+            <textarea
+                id="modal-reason"
+                class="form-input"
+                rows="3"
+                placeholder="Per què descartes aquesta tasca?"
+            ></textarea>
+        </div>
+        <div class="form-actions modal-actions">
+            <button type="button" class="btn-link btn-secondary" id="modal-cancel">Cancel·lar</button>
+            <button type="button" class="btn-link btn-danger" id="modal-confirm">Descartar</button>
+        </div>
+        <p class="modal-error" id="modal-error" hidden></p>
     </div>
 </div>
 {% endblock %}

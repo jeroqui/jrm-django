@@ -1,12 +1,17 @@
+from datetime import date as date_type
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from app.forms import TaskDiscardForm, TaskForm, TaskGroupForm
 from app.models import Task, TaskGroup
 from app.services.tasks import (
+    FlatTaskNode,
     build_stats_chart_data,
     complete_task,
     discard_task,
@@ -37,12 +42,14 @@ def task_list(request):
 
     tasks = get_tasks_for_date(user=request.user, target_date=today)
     nodes = flatten_task_tree(tasks)
+    groups = list(TaskGroup.objects.filter(user=request.user))
 
     return render(
         request,
         "app/dashboard/tasks.html",
         {
             "nodes": nodes,
+            "groups": groups,
             "today": today,
         },
     )
@@ -291,3 +298,106 @@ def task_group_delete(request, pk):
         "app/dashboard/task_group_delete.html",
         {"group": group},
     )
+
+
+# ─── AJAX API views ───────────────────────────────────────────────────────────
+
+@login_required
+@require_POST
+def task_api_create(request):
+    denied = _staff_required(request)
+    if denied:
+        return JsonResponse({"ok": False, "error": "Forbidden"}, status=403)
+
+    title = request.POST.get("title", "").strip()
+    if not title:
+        return JsonResponse({"ok": False, "error": "Cal un títol."})
+
+    group_id = request.POST.get("group") or None
+    parent_id = request.POST.get("parent") or None
+    scheduled_date_str = request.POST.get("scheduled_date", "").strip()
+
+    today = timezone.localdate()
+
+    group = None
+    if group_id:
+        try:
+            group = TaskGroup.objects.get(pk=int(group_id), user=request.user)
+        except (TaskGroup.DoesNotExist, ValueError):
+            pass
+
+    parent = None
+    depth = 0
+    if parent_id:
+        try:
+            parent = Task.objects.get(pk=int(parent_id), user=request.user)
+            depth = 1
+        except (Task.DoesNotExist, ValueError):
+            pass
+
+    scheduled_date = today
+    if scheduled_date_str:
+        try:
+            scheduled_date = date_type.fromisoformat(scheduled_date_str)
+        except ValueError:
+            pass
+
+    task = Task.objects.create(
+        user=request.user,
+        title=title,
+        group=group,
+        parent=parent,
+        scheduled_date=scheduled_date,
+    )
+
+    node = FlatTaskNode(task=task, depth=depth, indent_rem=depth * 1.5)
+    html = render_to_string(
+        "app/dashboard/_task_node.html",
+        {"node": node},
+        request=request,
+    )
+
+    return JsonResponse({
+        "ok": True,
+        "html": html,
+        "task_id": task.pk,
+        "parent_id": parent.pk if parent else None,
+    })
+
+
+@login_required
+@require_POST
+def task_api_complete(request, pk):
+    denied = _staff_required(request)
+    if denied:
+        return JsonResponse({"ok": False, "error": "Forbidden"}, status=403)
+
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+    descendants = task.get_all_descendants()
+    complete_task(task=task)
+
+    return JsonResponse({
+        "ok": True,
+        "affected_ids": [task.pk] + [d.pk for d in descendants],
+    })
+
+
+@login_required
+@require_POST
+def task_api_discard(request, pk):
+    denied = _staff_required(request)
+    if denied:
+        return JsonResponse({"ok": False, "error": "Forbidden"}, status=403)
+
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+    reason = request.POST.get("reason", "").strip()
+    if not reason:
+        return JsonResponse({"ok": False, "error": "Cal un motiu per descartar."})
+
+    descendants = task.get_all_descendants()
+    discard_task(task=task, reason=reason)
+
+    return JsonResponse({
+        "ok": True,
+        "affected_ids": [task.pk] + [d.pk for d in descendants],
+    })

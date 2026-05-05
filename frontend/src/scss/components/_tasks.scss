@@ -1,5 +1,79 @@
 @use "../variables" as vars;
 
+// ─── Tasks grid (full-width single card) ──────────────────────────────────────
+
+.tasks-grid {
+    grid-template-columns: 1fr !important;
+}
+
+.tasks-card {
+    max-width: 700px;
+}
+
+// ─── Quick-add form ───────────────────────────────────────────────────────────
+
+.task-quick-add {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1.25rem;
+
+    .task-quick-input {
+        flex: 1;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.95rem;
+    }
+
+    .task-quick-group {
+        width: auto;
+        padding: 0.55rem 0.6rem;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .task-quick-submit {
+        padding: 0.4rem 0.9rem;
+        font-size: 1.2rem;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+}
+
+// ─── Inline subtask add ───────────────────────────────────────────────────────
+
+.task-inline-add {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    padding: 0.4rem 0.75rem 0.4rem 2.25rem;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    margin-top: 0.2rem;
+
+    .task-quick-input {
+        flex: 1;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.85rem;
+    }
+
+    button {
+        font-size: 0.75rem !important;
+        padding: 0.2rem 0.5rem !important;
+    }
+}
+
+// ─── Modal error ──────────────────────────────────────────────────────────────
+
+.modal-error {
+    color: rgb(255, 120, 120);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
 // ─── Task tree ────────────────────────────────────────────────────────────────
 
 .task-tree {
