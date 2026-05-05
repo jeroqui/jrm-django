@@ -1,0 +1,24 @@
+{% extends 'app/dashboard_base.html' %}
+
+{% block title %}Eliminar grup{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <a href="{% url 'app:task_group_list' %}" class="back-link">← Tornar als grups</a>
+
+        <div class="form-card episode-form">
+            <h1>Eliminar grup «{{ group.name }}»</h1>
+            <p>Les tasques d'aquest grup quedaran sense grup assignat.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-actions">
+                    <a href="{% url 'app:task_group_list' %}" class="btn-link btn-secondary">Cancel·lar</a>
+                    <button type="submit" class="btn-link btn-danger">Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Post, DeQueVaEpisode
+from .models import User, Post, DeQueVaEpisode, Task, TaskGroup, TaskReschedule
 
 
 @admin.register(User)
@@ -40,3 +40,26 @@ class DeQueVaEpisodeAdmin(admin.ModelAdmin):
     @admin.display(boolean=True, description='Link')
     def has_link(self, obj):
         return bool(obj.full_episode_url)
+
+
+@admin.register(TaskGroup)
+class TaskGroupAdmin(admin.ModelAdmin):
+    list_display = ("name", "color", "user")
+    list_filter = ("user",)
+
+
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ("title", "user", "status", "scheduled_date", "group", "parent")
+    list_filter = ("status", "scheduled_date", "user", "group")
+    search_fields = ("title", "notes")
+    date_hierarchy = "scheduled_date"
+    raw_id_fields = ("parent",)
+    ordering = ("-scheduled_date",)
+
+
+@admin.register(TaskReschedule)
+class TaskRescheduleAdmin(admin.ModelAdmin):
+    list_display = ("task", "from_date", "to_date", "rescheduled_at")
+    list_filter = ("from_date", "to_date")
+    ordering = ("-rescheduled_at",)

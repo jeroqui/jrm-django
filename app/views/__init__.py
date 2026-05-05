@@ -1,4 +1,16 @@
 from .home import cv, home, narratives
+from .tasks import (
+    task_list,
+    task_create,
+    task_edit,
+    task_complete,
+    task_discard,
+    task_cleanup,
+    task_stats,
+    task_group_list,
+    task_group_edit,
+    task_group_delete,
+)
 from .blog import (
     blog_detail,
     blog_editor,
@@ -55,4 +67,14 @@ __all__ = [
     "project_pomesagres",
     "project_pomesagres_normes",
     "project_jacobs_habits",
+    "task_list",
+    "task_create",
+    "task_edit",
+    "task_complete",
+    "task_discard",
+    "task_cleanup",
+    "task_stats",
+    "task_group_list",
+    "task_group_edit",
+    "task_group_delete",
 ]

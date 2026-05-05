@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from app.forms import DeQueVaEpisodeForm, HabitForm
-from app.models import DeQueVaEpisode, Habit, Post
+from app.models import DeQueVaEpisode, Habit, Post, Task
 from app.services.habits import get_habit_checkoff_state
 
 
@@ -43,6 +43,14 @@ def dashboard(request):
         "today_habits": checkoff.habits,
         "today": today,
     }
+
+    if request.user.is_staff:
+        context["pending_task_count"] = Task.objects.filter(
+            user=request.user, status=Task.Status.PENDING, scheduled_date=today
+        ).count()
+        context["overdue_count"] = Task.objects.filter(
+            user=request.user, status=Task.Status.PENDING, scheduled_date__lt=today
+        ).count()
 
     return render(request, "app/dashboard.html", context)
 

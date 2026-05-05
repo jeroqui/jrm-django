@@ -44,6 +44,18 @@ urlpatterns = [
     ),
     path("dashboard/habits/day/", views.habit_day, name="habit_day"),
 
+    # Tasks (staff only)
+    path("dashboard/tasks/", views.task_list, name="task_list"),
+    path("dashboard/tasks/new/", views.task_create, name="task_create"),
+    path("dashboard/tasks/<int:pk>/edit/", views.task_edit, name="task_edit"),
+    path("dashboard/tasks/<int:pk>/complete/", views.task_complete, name="task_complete"),
+    path("dashboard/tasks/<int:pk>/discard/", views.task_discard, name="task_discard"),
+    path("dashboard/tasks/cleanup/", views.task_cleanup, name="task_cleanup"),
+    path("dashboard/tasks/stats/", views.task_stats, name="task_stats"),
+    path("dashboard/task-groups/", views.task_group_list, name="task_group_list"),
+    path("dashboard/task-groups/<int:pk>/edit/", views.task_group_edit, name="task_group_edit"),
+    path("dashboard/task-groups/<int:pk>/delete/", views.task_group_delete, name="task_group_delete"),
+
     # Projects
     path("projects/", views.projects_index, name="projects"),
     path("projects/de-que-va/", views.project_de_que_va, name="project_de_que_va"),

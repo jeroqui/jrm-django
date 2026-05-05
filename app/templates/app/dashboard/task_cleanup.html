@@ -1,0 +1,80 @@
+{% extends 'app/dashboard_base.html' %}
+
+{% block title %}Neteja de tasques{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <h1>Tasques pendents d'altres dies</h1>
+        <p class="intro">Tens tasques pendents de dies anteriors. Reprograma-les o descarta-les per continuar.</p>
+
+        {% if errors %}
+        <div class="messages">
+            {% for error in errors %}
+            <div class="message error">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% for item in cleanup_tasks %}
+            {% with task=item.task %}
+            <div class="cleanup-task-row">
+                <input type="hidden" name="task_id" value="{{ task.pk }}">
+
+                <div class="cleanup-task-header">
+                    {% if task.group %}
+                    <span class="task-group-badge" style="--group-color: {{ task.group.color }}">
+                        {{ task.group.name }}
+                    </span>
+                    {% endif %}
+                    <strong>{{ task.title }}</strong>
+                    <span class="sidenote">
+                        {{ task.scheduled_date|date:"d/m/Y" }} ·
+                        {{ item.days_overdue }} dia{% if item.days_overdue != 1 %}es{% endif %} de retard
+                    </span>
+                </div>
+
+                {% if task.notes %}
+                <div class="sidenote" style="margin-top:0.3rem">{{ task.notes }}</div>
+                {% endif %}
+
+                <div class="cleanup-actions">
+                    <div class="cleanup-action-group">
+                        <label>
+                            <input type="radio" name="action_{{ task.pk }}" value="reschedule" checked>
+                            Reprograma a:
+                        </label>
+                        <input
+                            type="date"
+                            name="to_date_{{ task.pk }}"
+                            value="{{ today_str }}"
+                            class="form-input cleanup-date-input"
+                        >
+                    </div>
+                    <div class="cleanup-action-group">
+                        <label>
+                            <input type="radio" name="action_{{ task.pk }}" value="discard">
+                            Descarta — motiu:
+                        </label>
+                        <textarea
+                            name="reason_{{ task.pk }}"
+                            class="form-input"
+                            rows="2"
+                            placeholder="Per què descartes aquesta tasca?"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+
+            <div class="form-actions" style="margin-top: 2rem">
+                <button type="submit" class="btn-primary">Processar tasques</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

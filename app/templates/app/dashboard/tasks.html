@@ -1,0 +1,72 @@
+{% extends 'app/dashboard_base.html' %}
+{% load task_tags %}
+
+{% block title %}Tasques{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <a href="{% url 'app:dashboard' %}" class="back-link">← Tornar al dashboard</a>
+        <h1>Tasques</h1>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2>Avui · {{ today|date:"d/m/Y" }}</h2>
+                    <div class="card-header-actions">
+                        <a href="{% url 'app:task_stats' %}" class="btn-link btn-secondary">Estadístiques</a>
+                        <a href="{% url 'app:task_group_list' %}" class="btn-link btn-secondary">Grups</a>
+                        <a href="{% url 'app:task_create' %}?date={{ today|date:'Y-m-d' }}" class="btn-link">+ Nova tasca</a>
+                    </div>
+                </div>
+
+                {% if nodes %}
+                <div class="task-tree">
+                    {% for node in nodes %}
+                    {% include 'app/dashboard/_task_node.html' with node=node %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="card-empty">
+                    <p>Cap tasca per avui.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Discard modal -->
+<div class="task-discard-modal" id="task-discard-modal" hidden>
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-box">
+        <h3>Descartar tasca</h3>
+        <p class="modal-task-title" id="modal-task-title"></p>
+        <form method="post" id="task-discard-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="modal-reason">Motiu</label>
+                <textarea
+                    name="reason"
+                    id="modal-reason"
+                    class="form-input"
+                    rows="3"
+                    placeholder="Per què descartes aquesta tasca?"
+                ></textarea>
+            </div>
+            <div class="form-actions modal-actions">
+                <button type="button" class="btn-link btn-secondary" id="modal-cancel">Cancel·lar</button>
+                <button type="submit" class="btn-link btn-danger">Descartar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
