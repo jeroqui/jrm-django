@@ -180,3 +180,56 @@ class TaskServiceTests(TestCase):
         self.assertIn("max_scheduled", chart)
         self.assertIn("chart_height", chart)
         self.assertIn("today", chart)
+
+
+class FlattenTaskTreeOrderingTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="tester", password="pass")
+        self.today = timezone.localdate()
+
+    def _task(self, title, order=0, parent=None):
+        return Task.objects.create(
+            user=self.user, title=title,
+            scheduled_date=self.today, order=order, parent=parent,
+        )
+
+    def test_roots_sorted_by_order_field(self):
+        t2 = self._task("B task", order=2)
+        t1 = self._task("A task", order=1)
+        t3 = self._task("C task", order=3)
+        nodes = flatten_task_tree([t1, t2, t3])
+        titles = [n.task.title for n in nodes]
+        self.assertEqual(titles, ["A task", "B task", "C task"])
+
+    def test_children_sorted_by_order_within_parent(self):
+        parent = self._task("Parent", order=1)
+        c2 = self._task("Child B", order=2, parent=parent)
+        c1 = self._task("Child A", order=1, parent=parent)
+        nodes = flatten_task_tree([parent, c1, c2])
+        titles = [n.task.title for n in nodes]
+        self.assertEqual(titles, ["Parent", "Child A", "Child B"])
+
+    def test_order_num_assigned_only_to_root_tasks(self):
+        parent = self._task("Root", order=1)
+        child = self._task("Child", order=1, parent=parent)
+        nodes = flatten_task_tree([parent, child])
+        by_title = {n.task.title: n for n in nodes}
+        self.assertEqual(by_title["Root"].order_num, 1)
+        self.assertEqual(by_title["Child"].order_num, 0)
+
+    def test_order_nums_sequential_across_roots(self):
+        t1 = self._task("First", order=1)
+        t2 = self._task("Second", order=2)
+        t3 = self._task("Third", order=3)
+        nodes = flatten_task_tree([t1, t2, t3])
+        root_nodes = [n for n in nodes if n.depth == 0]
+        nums = [n.order_num for n in root_nodes]
+        self.assertEqual(nums, [1, 2, 3])
+
+    def test_subtask_order_nums_are_zero(self):
+        p1 = self._task("P1", order=1)
+        c1 = self._task("C1", order=1, parent=p1)
+        p2 = self._task("P2", order=2)
+        nodes = flatten_task_tree([p1, c1, p2])
+        subtask_node = next(n for n in nodes if n.task.title == "C1")
+        self.assertEqual(subtask_node.order_num, 0)

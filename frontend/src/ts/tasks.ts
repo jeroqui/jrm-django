@@ -408,11 +408,23 @@ function initDragAndDrop(): void {
     if (!draggedEl) return;
 
     const isBefore = target.classList.contains("drop-before");
-    const descendants = getDomDescendants(tree, droppedId);
-    const group = [draggedEl, ...descendants];
 
+    // Compute descendants before any DOM mutation
+    const descendants = getDomDescendants(tree, droppedId);
+
+    // Guard: dropping onto a descendant would move that node into the fragment
+    // then try to insertBefore a node no longer in the tree → nodes disappear
+    const descendantIds = new Set(descendants.map(el => Number(el.dataset.taskId)));
+    if (descendantIds.has(Number(target.dataset.taskId))) {
+      tree.querySelectorAll(".dragging, .drop-before, .drop-after").forEach(el => {
+        el.classList.remove("dragging", "drop-before", "drop-after");
+      });
+      return;
+    }
+
+    const moveGroup = [draggedEl, ...descendants];
     const fragment = document.createDocumentFragment();
-    group.forEach(el => fragment.appendChild(el));
+    moveGroup.forEach(el => fragment.appendChild(el));
 
     if (isBefore) {
       tree.insertBefore(fragment, target);
