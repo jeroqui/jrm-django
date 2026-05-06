@@ -60,11 +60,12 @@ class Task(models.Model):
     )
     discard_reason = models.TextField(blank=True)
     scheduled_date = models.DateField(default=date.today)
+    order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["scheduled_date", "group__name", "title"]
+        ordering = ["scheduled_date", "order", "title"]
 
     def __str__(self) -> str:
         return self.title

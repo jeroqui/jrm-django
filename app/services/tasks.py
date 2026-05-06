@@ -35,6 +35,7 @@ class FlatTaskNode:
     task: Task
     depth: int
     indent_rem: float  # pre-computed depth * 1.5
+    order_num: int = 0  # 1-based position among root tasks; 0 for subtasks
 
 
 def needs_cleanup(*, user, today: Optional[date] = None) -> bool:
@@ -93,7 +94,7 @@ def get_tasks_for_date(*, user, target_date: date) -> list[Task]:
         Task.objects.filter(user=user, scheduled_date=target_date)
         .select_related("group", "parent")
         .prefetch_related("subtasks__group")
-        .order_by("group__name", "title")
+        .order_by("order", "title")
     )
 
 
@@ -104,16 +105,23 @@ def flatten_task_tree(tasks: list[Task]) -> list[FlatTaskNode]:
     Only root-level tasks (no parent, or parent not in this list) are entry points.
     """
     task_ids = {t.id for t in tasks}
-    by_id = {t.id: t for t in tasks}
 
     roots = [t for t in tasks if t.parent_id is None or t.parent_id not in task_ids]
+    roots.sort(key=lambda t: (t.order, t.title))
 
     result: list[FlatTaskNode] = []
+    root_counter = 0
 
     def _walk(task: Task, depth: int) -> None:
-        result.append(FlatTaskNode(task=task, depth=depth, indent_rem=depth * 1.5))
+        nonlocal root_counter
+        if depth == 0:
+            root_counter += 1
+            order_num = root_counter
+        else:
+            order_num = 0
+        result.append(FlatTaskNode(task=task, depth=depth, indent_rem=depth * 1.5, order_num=order_num))
         children = [t for t in tasks if t.parent_id == task.id]
-        children.sort(key=lambda t: t.title)
+        children.sort(key=lambda t: (t.order, t.title))
         for child in children:
             _walk(child, depth + 1)
 

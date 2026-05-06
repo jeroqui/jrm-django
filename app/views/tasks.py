@@ -1,7 +1,9 @@
+import json as _json
 from datetime import date as date_type
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Max
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -43,6 +45,10 @@ def task_list(request):
     tasks = get_tasks_for_date(user=request.user, target_date=today)
     nodes = flatten_task_tree(tasks)
     groups = list(TaskGroup.objects.filter(user=request.user))
+    groups_json = _json.dumps([
+        {"id": g.pk, "name": g.name, "color": g.color}
+        for g in groups
+    ])
 
     return render(
         request,
@@ -50,6 +56,7 @@ def task_list(request):
         {
             "nodes": nodes,
             "groups": groups,
+            "groups_json": groups_json,
             "today": today,
         },
     )
@@ -342,12 +349,20 @@ def task_api_create(request):
         except ValueError:
             pass
 
+    max_order = Task.objects.filter(
+        user=request.user,
+        scheduled_date=scheduled_date,
+        parent=parent,
+    ).aggregate(m=Max("order"))["m"]
+    next_order = (max_order or 0) + 1
+
     task = Task.objects.create(
         user=request.user,
         title=title,
         group=group,
         parent=parent,
         scheduled_date=scheduled_date,
+        order=next_order,
     )
 
     node = FlatTaskNode(task=task, depth=depth, indent_rem=depth * 1.5)
@@ -401,3 +416,56 @@ def task_api_discard(request, pk):
         "ok": True,
         "affected_ids": [task.pk] + [d.pk for d in descendants],
     })
+
+
+@login_required
+@require_POST
+def task_api_update(request, pk):
+    denied = _staff_required(request)
+    if denied:
+        return JsonResponse({"ok": False, "error": "Forbidden"}, status=403)
+
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+
+    if "title" in request.POST:
+        title = request.POST["title"].strip()
+        if title:
+            task.title = title
+
+    if "notes" in request.POST:
+        task.notes = request.POST["notes"]
+
+    if "group" in request.POST:
+        group_id = request.POST.get("group") or None
+        if group_id:
+            try:
+                task.group = TaskGroup.objects.get(pk=int(group_id), user=request.user)
+            except (TaskGroup.DoesNotExist, ValueError):
+                return JsonResponse({"ok": False, "error": "Grup no trobat."})
+        else:
+            task.group = None
+
+    task.save()
+    return JsonResponse({"ok": True})
+
+
+@login_required
+@require_POST
+def task_api_reorder(request):
+    denied = _staff_required(request)
+    if denied:
+        return JsonResponse({"ok": False, "error": "Forbidden"}, status=403)
+
+    try:
+        items = _json.loads(request.POST.get("items", "[]"))
+    except (_json.JSONDecodeError, ValueError):
+        return JsonResponse({"ok": False, "error": "Format invàlid."})
+
+    for i, item in enumerate(items):
+        try:
+            task_id = int(item["id"])
+        except (KeyError, ValueError, TypeError):
+            continue
+        Task.objects.filter(pk=task_id, user=request.user).update(order=i)
+
+    return JsonResponse({"ok": True})

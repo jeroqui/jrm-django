@@ -83,12 +83,28 @@
 }
 
 .task-node {
+    transition: opacity 0.15s;
+
     &.task-done .task-item {
         opacity: 0.45;
 
         .task-title {
             text-decoration: line-through;
         }
+    }
+
+    &.dragging {
+        opacity: 0.4;
+    }
+
+    &.drop-before {
+        border-top: 2px solid orange;
+        border-radius: 0;
+    }
+
+    &.drop-after {
+        border-bottom: 2px solid orange;
+        border-radius: 0;
     }
 }
 
@@ -105,6 +121,13 @@
         flex: 1;
         min-width: 0;
         word-break: break-word;
+        cursor: text;
+
+        &[contenteditable="true"] {
+            outline: 1px solid rgba(orange, 0.5);
+            border-radius: 3px;
+            padding: 0 3px;
+        }
     }
 
     .task-actions {
@@ -118,6 +141,45 @@
         display: inline;
         margin: 0;
         padding: 0;
+    }
+}
+
+.task-drag-handle {
+    cursor: grab;
+    opacity: 0.25;
+    font-size: 1rem;
+    user-select: none;
+    flex-shrink: 0;
+    line-height: 1;
+
+    &:hover {
+        opacity: 0.65;
+    }
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.task-order-num {
+    font-size: 0.68rem;
+    opacity: 0.35;
+    min-width: 1.4em;
+    text-align: right;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.task-checkbox {
+    flex-shrink: 0;
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    accent-color: orange;
+
+    &:disabled {
+        cursor: default;
+        opacity: 0.5;
     }
 }
 
@@ -287,4 +349,82 @@
     gap: 0.75rem;
     justify-content: flex-end;
     margin-top: 1rem;
+}
+
+// ─── Task options popover ─────────────────────────────────────────────────────
+
+.task-popover {
+    &[hidden] {
+        display: none;
+    }
+
+    .popover-box {
+        position: absolute;
+        background: vars.$bg-color;
+        border: 1px solid rgba(white, 0.15);
+        border-radius: 10px;
+        padding: 1rem;
+        min-width: 220px;
+        max-width: 280px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+        z-index: 500;
+    }
+
+    .popover-section {
+        margin-bottom: 0.75rem;
+    }
+
+    .popover-groups {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .popover-notes {
+        width: 100%;
+        font-size: 0.85rem;
+        resize: vertical;
+        min-height: 3.5rem;
+    }
+
+    .popover-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid rgba(white, 0.08);
+    }
+}
+
+// ─── Group swatches ───────────────────────────────────────────────────────────
+
+.group-swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--swatch-color, #888) 35%, transparent);
+    border: 2px solid color-mix(in srgb, var(--swatch-color, #888) 55%, transparent);
+    cursor: pointer;
+    transition: transform 0.12s;
+    flex-shrink: 0;
+
+    &:hover {
+        transform: scale(1.2);
+    }
+
+    &.active {
+        border-color: var(--swatch-color, white);
+        box-shadow: 0 0 0 2px rgba(white, 0.5);
+    }
+
+    &.group-swatch-none {
+        --swatch-color: #888;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(white, 0.5);
+    }
 }

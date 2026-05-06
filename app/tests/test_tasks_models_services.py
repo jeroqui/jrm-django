@@ -59,7 +59,7 @@ class TaskServiceTests(TestCase):
         self.user = User.objects.create_user(
             username="jacob", email="jacob@example.com", password="testpass"
         )
-        self.today = date(2026, 5, 5)
+        self.today = timezone.localdate()
         self.yesterday = self.today - timedelta(days=1)
 
     def _task(self, title="Task", scheduled_date=None, parent=None):
