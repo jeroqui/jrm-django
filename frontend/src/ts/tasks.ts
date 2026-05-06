@@ -193,24 +193,15 @@ function closePopover(): void {
   currentPopoverTaskId = null;
 }
 
-async function applyGroupChange(groupId: number | null): Promise<void> {
-  if (currentPopoverTaskId === null) return;
-  const node = document.querySelector<HTMLElement>(`[data-task-id="${currentPopoverTaskId}"]`);
-  if (!node) return;
-
-  const updateUrl = node.getAttribute("data-update-url") ?? "";
-  const json = await postForm(updateUrl, new URLSearchParams({ group: groupId !== null ? String(groupId) : "" }));
-  if (!json.ok) return;
-
+function updateGroupBadge(node: HTMLElement, groupId: number | null): void {
   node.dataset.groupId = groupId !== null ? String(groupId) : "";
-
-  const existingBadge = node.querySelector(".task-group-badge");
+  const existing = node.querySelector(".task-group-badge");
   if (groupId !== null) {
     const group = getGroupsData().find(g => g.id === groupId);
     if (group) {
-      if (existingBadge) {
-        (existingBadge as HTMLElement).style.setProperty("--group-color", group.color);
-        existingBadge.textContent = group.name;
+      if (existing) {
+        (existing as HTMLElement).style.setProperty("--group-color", group.color);
+        existing.textContent = group.name;
       } else {
         const badge = document.createElement("span");
         badge.className = "task-group-badge";
@@ -220,8 +211,22 @@ async function applyGroupChange(groupId: number | null): Promise<void> {
       }
     }
   } else {
-    existingBadge?.remove();
+    existing?.remove();
   }
+}
+
+async function applyGroupChange(groupId: number | null): Promise<void> {
+  if (currentPopoverTaskId === null) return;
+  const node = document.querySelector<HTMLElement>(`[data-task-id="${currentPopoverTaskId}"]`);
+  if (!node) return;
+
+  const json = await postForm(
+    node.getAttribute("data-update-url") ?? "",
+    new URLSearchParams({ group: groupId !== null ? String(groupId) : "" }),
+  );
+  if (!json.ok) return;
+
+  updateGroupBadge(node, groupId);
 
   const groupsEl = document.getElementById("popover-groups");
   groupsEl?.querySelectorAll<HTMLElement>(".js-swatch").forEach(btn => {
@@ -319,6 +324,24 @@ function renumberTasks(tree: HTMLElement): void {
 
 let dragAllowed = false;
 
+function inferGroupFromNeighbors(tree: HTMLElement, el: HTMLElement): number | null {
+  // Only root tasks participate in positional group inheritance
+  if (el.dataset.parentId !== "") return null;
+
+  const roots = Array.from(tree.querySelectorAll<HTMLElement>("[data-task-id]")).filter(
+    n => n.dataset.parentId === "",
+  );
+  const idx = roots.indexOf(el);
+  if (idx === -1) return null;
+
+  const prevGroupId = idx > 0 ? (roots[idx - 1].dataset.groupId || null) : null;
+  const nextGroupId = idx < roots.length - 1 ? (roots[idx + 1].dataset.groupId || null) : null;
+
+  // Both neighbours share the same non-null group → inherit it
+  if (prevGroupId && nextGroupId && prevGroupId === nextGroupId) return Number(prevGroupId);
+  return null;
+}
+
 function getDomDescendants(tree: HTMLElement, taskId: number): HTMLElement[] {
   const result: HTMLElement[] = [];
   function collect(pid: number) {
@@ -404,10 +427,18 @@ function initDragAndDrop(): void {
     });
     renumberTasks(tree);
 
-    const items = Array.from(tree.querySelectorAll<HTMLElement>("[data-task-id]")).map((el, i) => ({
-      id: Number(el.dataset.taskId),
-      order: i,
-    }));
+    // Infer whether the dragged task should join or leave a group based on its new neighbours
+    const newGroupId = inferGroupFromNeighbors(tree, draggedEl);
+    const currentGroupId = draggedEl.dataset.groupId ? Number(draggedEl.dataset.groupId) : null;
+    const groupChanged = newGroupId !== currentGroupId;
+    if (groupChanged) updateGroupBadge(draggedEl, newGroupId);
+
+    // Build reorder payload; include group_id for dragged item if it changed
+    const items = Array.from(tree.querySelectorAll<HTMLElement>("[data-task-id]")).map((el, i) => {
+      const item: Record<string, unknown> = { id: Number(el.dataset.taskId), order: i };
+      if (el === draggedEl && groupChanged) item.group_id = newGroupId;
+      return item;
+    });
     await postForm(reorderUrl, new URLSearchParams({ items: JSON.stringify(items) }));
   });
 }

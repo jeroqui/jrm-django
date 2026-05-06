@@ -466,6 +466,18 @@ def task_api_reorder(request):
             task_id = int(item["id"])
         except (KeyError, ValueError, TypeError):
             continue
-        Task.objects.filter(pk=task_id, user=request.user).update(order=i)
+        updates: dict = {"order": i}
+        if "group_id" in item:
+            raw_gid = item["group_id"]
+            if raw_gid is None:
+                updates["group_id"] = None
+            else:
+                try:
+                    gid = int(raw_gid)
+                    if TaskGroup.objects.filter(pk=gid, user=request.user).exists():
+                        updates["group_id"] = gid
+                except (ValueError, TypeError):
+                    pass
+        Task.objects.filter(pk=task_id, user=request.user).update(**updates)
 
     return JsonResponse({"ok": True})
