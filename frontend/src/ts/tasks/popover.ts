@@ -14,13 +14,13 @@ export function initPopover(): void {
 
   if (!popover || !box) return;
 
-  // Build group swatches once
+  // Build group picker once
   if (groupsEl) {
     const noBtn = document.createElement("button");
     noBtn.type = "button";
-    noBtn.className = "group-swatch group-swatch-none js-swatch";
+    noBtn.className = "group-pick-btn group-pick-none js-swatch";
     noBtn.title = "Sense grup";
-    noBtn.textContent = "×";
+    noBtn.textContent = "Cap";
     noBtn.dataset.groupId = "";
     noBtn.addEventListener("click", () => applyGroupChange(null));
     groupsEl.appendChild(noBtn);
@@ -28,9 +28,10 @@ export function initPopover(): void {
     for (const g of getGroupsData()) {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "group-swatch js-swatch";
-      btn.style.setProperty("--swatch-color", g.color);
+      btn.className = "group-pick-btn js-swatch";
+      btn.style.setProperty("--group-color", g.color);
       btn.title = g.name;
+      btn.textContent = g.name;
       btn.dataset.groupId = String(g.id);
       btn.addEventListener("click", () => applyGroupChange(g.id));
       groupsEl.appendChild(btn);

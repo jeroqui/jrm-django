@@ -6,7 +6,7 @@
 <div class="dashboard-page">
     <div class="section">
         <a href="{% url 'app:task_list' %}" class="back-link">← Tornar a les tasques</a>
-        <h1>Estadístiques — últims 30 dies</h1>
+        <h1 style="margin-bottom:1.25rem">Estadístiques — últims 30 dies</h1>
 
         <div class="task-stats-legend">
             <div class="legend-item">
@@ -31,70 +31,38 @@
         <div class="task-stats-chart">
             {% if stats %}
             <svg
-                viewBox="0 0 {{ stats|length|add:0|default:1 }} {{ chart_height|add:30 }}"
+                viewBox="0 0 {{ stats|length }} {{ chart_height }}"
                 preserveAspectRatio="none"
-                width="{{ stats|length|add:0|default:1 }}0"
-                height="220"
-                style="min-width:600px;max-width:100%;display:block"
+                style="width:100%;height:200px;display:block"
             >
                 {% for stat in stats %}
-                {% with x_pos=forloop.counter0 bar_w=0.7 %}
-                <!-- scheduled background bar -->
-                <rect
-                    x="{{ x_pos }}{{ ".15"|default:'' }}"
-                    y="{{ chart_height|add:0 }}"
-                    width="0.7"
-                    height="-{{ stat.bar_heights.scheduled }}"
+                {% with x_pos=forloop.counter0 %}
+                <rect x="{{ x_pos }}.15" y="{{ chart_height }}" width="0.7" height="-{{ stat.bar_heights.scheduled }}"
                     fill="rgba(255,255,255,0.15)"
-                    transform="scale(1,-1) translate(0,-{{ chart_height|add:0 }})"
-                />
-                <!-- completed bar -->
-                <rect
-                    x="{{ x_pos }}.15"
-                    y="0"
-                    width="0.7"
-                    height="{{ stat.bar_heights.completed }}"
-                    fill="orange"
-                    opacity="0.9"
-                    transform="translate(0,{{ chart_height|add:0 }}) scale(1,-1)"
-                />
-                <!-- discarded bar (offset) -->
-                <rect
-                    x="{{ x_pos }}.15"
-                    y="{{ stat.bar_heights.completed }}"
-                    width="0.35"
-                    height="{{ stat.bar_heights.discarded }}"
+                    transform="scale(1,-1) translate(0,-{{ chart_height }})"/>
+                <rect x="{{ x_pos }}.15" y="0" width="0.7" height="{{ stat.bar_heights.completed }}"
+                    fill="orange" opacity="0.9"
+                    transform="translate(0,{{ chart_height }}) scale(1,-1)"/>
+                <rect x="{{ x_pos }}.15" y="{{ stat.bar_heights.completed }}" width="0.35" height="{{ stat.bar_heights.discarded }}"
                     fill="rgba(255,100,100,0.7)"
-                    transform="translate(0,{{ chart_height|add:0 }}) scale(1,-1)"
-                />
-                <!-- rescheduled bar (offset) -->
-                <rect
-                    x="{{ x_pos }}.5"
-                    y="{{ stat.bar_heights.completed }}"
-                    width="0.35"
-                    height="{{ stat.bar_heights.rescheduled }}"
+                    transform="translate(0,{{ chart_height }}) scale(1,-1)"/>
+                <rect x="{{ x_pos }}.5" y="{{ stat.bar_heights.completed }}" width="0.35" height="{{ stat.bar_heights.rescheduled }}"
                     fill="rgba(166,255,243,0.8)"
-                    transform="translate(0,{{ chart_height|add:0 }}) scale(1,-1)"
-                />
-                {% if forloop.counter0|divisibleby:7 %}
-                <text
-                    x="{{ x_pos }}.5"
-                    y="{{ chart_height|add:20 }}"
-                    font-size="1.5"
-                    fill="rgba(255,255,255,0.5)"
-                    text-anchor="middle"
-                >{{ stat.date|date:"d/m" }}</text>
-                {% endif %}
+                    transform="translate(0,{{ chart_height }}) scale(1,-1)"/>
                 {% if stat.date == today %}
-                <line
-                    x1="{{ x_pos }}.5" y1="0"
-                    x2="{{ x_pos }}.5" y2="{{ chart_height }}"
-                    stroke="orange" stroke-width="0.1" stroke-dasharray="0.3,0.3" opacity="0.6"
-                />
+                <line x1="{{ x_pos }}.5" y1="0" x2="{{ x_pos }}.5" y2="{{ chart_height }}"
+                    stroke="orange" stroke-width="0.15" stroke-dasharray="0.5,0.5" opacity="0.5"/>
                 {% endif %}
                 {% endwith %}
                 {% endfor %}
             </svg>
+            <div class="task-stats-date-row">
+                {% for stat in stats %}
+                <div class="task-stats-date-col{% if stat.date == today %} today{% endif %}">
+                    {% if forloop.counter0|divisibleby:7 %}{{ stat.date|date:"d/m" }}{% endif %}
+                </div>
+                {% endfor %}
+            </div>
             {% else %}
             <p class="card-empty">Encara no hi ha dades.</p>
             {% endif %}
