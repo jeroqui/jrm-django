@@ -286,108 +286,34 @@
   }
 }
 
-.episode-form,
-.dashboard-card form {
+// Inline date + button form for habits per day
+.date-filter-form {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+
   .form-group {
-    margin-bottom: 1.5rem;
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
 
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
+.current-file {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
 
-    &.has-error {
-      .form-input {
-        border-color: #f66;
-      }
-    }
-
-    .field-errors {
-      margin-top: 0.5rem;
-
-      .error {
-        color: #faa;
-        font-size: 0.85rem;
-      }
-    }
-
-    .help-text {
-      display: block;
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      opacity: 0.6;
-    }
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
   }
 
-  .form-input {
+  audio {
     width: 100%;
-    padding: 0.75rem 1rem;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(white, 0.2);
-    border-radius: 6px;
-    color: white;
-    font-size: 1rem;
-    font-family: inherit;
-
-    &:focus {
-      outline: none;
-      border-color: vars.$primary-color;
-    }
-
-    &[type="file"] {
-      padding: 0.5rem;
-    }
-  }
-
-  // Inline date + button form for habits per day
-  .date-filter-form {
-    display: flex;
-    gap: 0.75rem;
-    align-items: flex-end;
-    margin-bottom: 1.5rem;
-
-    .form-group {
-      flex: 1;
-      margin-bottom: 0;
-    }
-
-    .form-input {
-      width: 100%;
-    }
-  }
-
-  textarea.form-input {
-    resize: vertical;
-    min-height: 100px;
-  }
-
-  .current-file {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
-
-    audio {
-      width: 100%;
-    }
-  }
-
-  .form-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(white, 0.1);
   }
 }
 

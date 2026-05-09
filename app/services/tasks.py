@@ -190,6 +190,31 @@ def get_task_stats(*, user, days: int = 30) -> list[TaskDayStat]:
     return stats
 
 
+def get_future_tasks(*, user, today: date, days_ahead: int = 14) -> list[dict]:
+    """
+    Return top-level pending tasks scheduled after today, up to days_ahead days,
+    grouped by date as a list of {"date": date, "tasks": [Task, ...]} dicts.
+    """
+    cutoff = today + timedelta(days=days_ahead)
+    tasks = list(
+        Task.objects.filter(
+            user=user,
+            status=Task.Status.PENDING,
+            scheduled_date__gt=today,
+            scheduled_date__lte=cutoff,
+            parent__isnull=True,
+        )
+        .select_related("group")
+        .order_by("scheduled_date", "order", "title")
+    )
+
+    groups: dict[date, list[Task]] = {}
+    for task in tasks:
+        groups.setdefault(task.scheduled_date, []).append(task)
+
+    return [{"date": d, "tasks": groups[d]} for d in sorted(groups)]
+
+
 def build_stats_chart_data(stats: list[TaskDayStat]) -> dict:
     max_scheduled = max((s.scheduled for s in stats), default=0)
     return {

@@ -13,6 +13,7 @@ from .tasks import (
     task_api_create,
     task_api_complete,
     task_api_discard,
+    task_api_reschedule,
     task_api_update,
     task_api_reorder,
 )
@@ -85,6 +86,7 @@ __all__ = [
     "task_api_create",
     "task_api_complete",
     "task_api_discard",
+    "task_api_reschedule",
     "task_api_update",
     "task_api_reorder",
 ]

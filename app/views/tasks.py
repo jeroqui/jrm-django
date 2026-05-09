@@ -18,6 +18,7 @@ from app.services.tasks import (
     complete_task,
     discard_task,
     flatten_task_tree,
+    get_future_tasks,
     get_pending_past_tasks,
     get_task_stats,
     get_tasks_for_date,
@@ -46,6 +47,7 @@ def task_list(request):
     nodes = flatten_task_tree(tasks)
     groups = list(TaskGroup.objects.filter(user=request.user))
     groups_list = [{"id": g.pk, "name": g.name, "color": g.color} for g in groups]
+    future_tasks = get_future_tasks(user=request.user, today=today)
 
     return render(
         request,
@@ -55,6 +57,7 @@ def task_list(request):
             "groups": groups,
             "groups_list": groups_list,
             "today": today,
+            "future_tasks": future_tasks,
         },
     )
 
@@ -179,7 +182,9 @@ def task_cleanup(request):
 
             action = request.POST.get(f"action_{task_id}", "reschedule")
 
-            if action == "discard":
+            if action == "complete":
+                complete_task(task=task)
+            elif action == "discard":
                 reason = request.POST.get(f"reason_{task_id}", "").strip()
                 if not reason:
                     errors.append(f"«{task.title}»: cal un motiu per descartar.")
@@ -189,7 +194,6 @@ def task_cleanup(request):
             else:
                 raw_date = request.POST.get(f"to_date_{task_id}", "").strip()
                 try:
-                    from datetime import date as date_type
                     new_date = date_type.fromisoformat(raw_date)
                 except ValueError:
                     errors.append(f"«{task.title}»: data invàlida.")
@@ -413,6 +417,27 @@ def task_api_discard(request, pk):
         "ok": True,
         "affected_ids": [task.pk] + [d.pk for d in descendants],
     })
+
+
+@login_required
+@require_POST
+def task_api_reschedule(request, pk):
+    denied = _staff_required(request)
+    if denied:
+        return JsonResponse({"ok": False, "error": "Forbidden"}, status=403)
+
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+    to_date_str = request.POST.get("to_date", "").strip()
+    if not to_date_str:
+        return JsonResponse({"ok": False, "error": "Cal una data."})
+
+    try:
+        to_date = date_type.fromisoformat(to_date_str)
+    except ValueError:
+        return JsonResponse({"ok": False, "error": "Data invàlida."})
+
+    reschedule_task(task=task, to_date=to_date)
+    return JsonResponse({"ok": True})
 
 
 @login_required

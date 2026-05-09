@@ -6,11 +6,21 @@ import { openDiscardModal } from "../modal";
 
 export let currentPopoverTaskId: number | null = null;
 
+function getTomorrowDateString(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
 export function initPopover(): void {
   const popover = document.getElementById("task-popover");
   const box = document.getElementById("popover-box");
   const groupsEl = document.getElementById("popover-groups");
   const discardBtn = document.getElementById("popover-discard");
+  const rescheduleBtn = document.getElementById("popover-reschedule");
+  const rescheduleForm = document.getElementById("popover-reschedule-form");
+  const rescheduleDateInput = document.getElementById("popover-reschedule-date") as HTMLInputElement | null;
+  const rescheduleConfirmBtn = document.getElementById("popover-reschedule-confirm");
 
   if (!popover || !box) return;
 
@@ -45,6 +55,37 @@ export function initPopover(): void {
     const url = node?.getAttribute("data-discard-url") ?? "";
     closePopover();
     openDiscardModal(currentPopoverTaskId, title, url);
+  });
+
+  rescheduleBtn?.addEventListener("click", () => {
+    if (!rescheduleForm || !rescheduleDateInput) return;
+    const isHidden = rescheduleForm.hasAttribute("hidden");
+    if (isHidden) {
+      rescheduleDateInput.value = getTomorrowDateString();
+      rescheduleForm.removeAttribute("hidden");
+      rescheduleDateInput.focus();
+    } else {
+      rescheduleForm.setAttribute("hidden", "");
+    }
+  });
+
+  rescheduleConfirmBtn?.addEventListener("click", async () => {
+    if (currentPopoverTaskId === null || !rescheduleDateInput) return;
+    const toDate = rescheduleDateInput.value;
+    if (!toDate) return;
+
+    const node = document.querySelector<HTMLElement>(`[data-task-id="${currentPopoverTaskId}"]`);
+    const url = node?.getAttribute("data-reschedule-url") ?? "";
+    if (!url) return;
+
+    const taskId = currentPopoverTaskId;
+    closePopover();
+
+    const json = await postForm(url, new URLSearchParams({ to_date: toDate }));
+    if (json.ok) {
+      const taskNode = document.querySelector<HTMLElement>(`[data-task-id="${taskId}"]`);
+      taskNode?.remove();
+    }
   });
 
   document.addEventListener("click", (e) => {
@@ -97,6 +138,7 @@ export function openPopover(taskId: number, anchorOrPos: HTMLElement | { x: numb
 
 export function closePopover(): void {
   document.getElementById("task-popover")?.setAttribute("hidden", "");
+  document.getElementById("popover-reschedule-form")?.setAttribute("hidden", "");
   currentPopoverTaskId = null;
 }
 

@@ -61,6 +61,31 @@
             </div>
         </div>
     </div>
+
+    {% if future_tasks %}
+    <div class="section future-tasks-section">
+        <details class="future-tasks-details">
+            <summary class="future-tasks-summary">Pròximes tasques</summary>
+            <div class="future-tasks-body">
+                {% for group in future_tasks %}
+                <div class="future-date-group">
+                    <h3 class="future-date-heading">{{ group.date|date:"l, d/m/Y" }}</h3>
+                    <ul class="future-task-list">
+                        {% for task in group.tasks %}
+                        <li class="future-task-item">
+                            <span class="future-task-title">{{ task.title }}</span>
+                            {% if task.group %}
+                            <span class="task-group-badge" style="--group-color: {{ task.group.color }}">{{ task.group.name }}</span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+    </div>
+    {% endif %}
 </div>
 
 <!-- Group data for JS popover (json_script escapes safely for raw-text script tags) -->
@@ -74,6 +99,11 @@
             <div class="popover-groups" id="popover-groups"></div>
         </div>
         <hr class="popover-divider">
+        <button type="button" class="popover-menu-item" id="popover-reschedule">Reprograma</button>
+        <div class="popover-reschedule-form" id="popover-reschedule-form" hidden>
+            <input type="date" class="popover-date-input" id="popover-reschedule-date">
+            <button type="button" class="btn-link btn-small" id="popover-reschedule-confirm">OK</button>
+        </div>
         <button type="button" class="popover-menu-item popover-menu-item-danger" id="popover-discard">Descartar</button>
     </div>
 </div>

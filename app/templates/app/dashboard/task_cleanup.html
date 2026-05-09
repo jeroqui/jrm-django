@@ -6,7 +6,7 @@
 <div class="dashboard-page">
     <div class="section">
         <h1>Tasques pendents d'altres dies</h1>
-        <p class="intro">Tens tasques pendents de dies anteriors. Reprograma-les o descarta-les per continuar.</p>
+        <p class="intro">Tens tasques pendents de dies anteriors. Reprograma-les, marca-les com a completades o descarta-les.</p>
 
         {% if errors %}
         <div class="messages">
@@ -52,7 +52,14 @@
                             name="to_date_{{ task.pk }}"
                             value="{{ today_str }}"
                             class="form-input cleanup-date-input"
+                            onfocus="this.closest('.cleanup-task-row').querySelector('[value=reschedule]').checked=true"
                         >
+                    </div>
+                    <div class="cleanup-action-group">
+                        <label>
+                            <input type="radio" name="action_{{ task.pk }}" value="complete">
+                            Marca com a completada
+                        </label>
                     </div>
                     <div class="cleanup-action-group">
                         <label>
@@ -64,6 +71,7 @@
                             class="form-input"
                             rows="2"
                             placeholder="Per què descartes aquesta tasca?"
+                            onfocus="this.closest('.cleanup-task-row').querySelector('[value=discard]').checked=true"
                         ></textarea>
                     </div>
                 </div>

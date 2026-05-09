@@ -1,0 +1,81 @@
+@use "../variables" as vars;
+
+// ─── Form layout ──────────────────────────────────────────────────────────────
+
+.form-group {
+  margin-bottom: 1.5rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  &.has-error .form-input {
+    border-color: #f66;
+  }
+
+  .field-errors {
+    margin-top: 0.5rem;
+
+    .error {
+      color: #faa;
+      font-size: 0.85rem;
+    }
+  }
+
+  .help-text {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    opacity: 0.6;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(white, 0.1);
+}
+
+// ─── Restore native appearance for radio/checkbox ────────────────────────────
+
+input[type="radio"],
+input[type="checkbox"] {
+  appearance: auto;
+}
+
+// ─── Generic form input ───────────────────────────────────────────────────────
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(white, 0.2);
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: vars.$primary-color;
+  }
+
+  &[type="file"] {
+    padding: 0.5rem;
+  }
+
+  &::placeholder {
+    color: rgba(white, 0.35);
+  }
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 80px;
+}

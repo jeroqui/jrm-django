@@ -59,6 +59,7 @@ urlpatterns = [
     path("dashboard/tasks/api/reorder/", views.task_api_reorder, name="task_api_reorder"),
     path("dashboard/tasks/<int:pk>/api/complete/", views.task_api_complete, name="task_api_complete"),
     path("dashboard/tasks/<int:pk>/api/discard/", views.task_api_discard, name="task_api_discard"),
+    path("dashboard/tasks/<int:pk>/api/reschedule/", views.task_api_reschedule, name="task_api_reschedule"),
     path("dashboard/tasks/<int:pk>/api/update/", views.task_api_update, name="task_api_update"),
 
     # Projects
