@@ -10,10 +10,8 @@
      draggable="true"
      style="padding-left: {{ node.indent_rem }}rem">
     <div class="task-item">
-        {% if node.depth == 0 %}
         <span class="task-drag-handle" title="Arrossegar per ordenar">⠿</span>
         {% if node.order_num %}<span class="task-order-num">{{ node.order_num }}</span>{% endif %}
-        {% endif %}
         <input
             type="checkbox"
             class="task-checkbox{% if node.task.status == 'pending' %} js-complete-check{% endif %}"

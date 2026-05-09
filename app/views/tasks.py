@@ -467,15 +467,15 @@ def task_api_reorder(request):
         except (KeyError, ValueError, TypeError):
             continue
         updates: dict = {"order": i}
-        if "group_id" in item:
-            raw_gid = item["group_id"]
-            if raw_gid is None:
-                updates["group_id"] = None
+        if "parent_id" in item:
+            raw_pid = item["parent_id"]
+            if raw_pid is None:
+                updates["parent_id"] = None
             else:
                 try:
-                    gid = int(raw_gid)
-                    if TaskGroup.objects.filter(pk=gid, user=request.user).exists():
-                        updates["group_id"] = gid
+                    pid = int(raw_pid)
+                    if Task.objects.filter(pk=pid, user=request.user).exists():
+                        updates["parent_id"] = pid
                 except (ValueError, TypeError):
                     pass
         Task.objects.filter(pk=task_id, user=request.user).update(**updates)

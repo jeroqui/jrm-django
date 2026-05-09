@@ -97,8 +97,6 @@ let currentPopoverTaskId: number | null = null;
 function initPopover(): void {
   const popover = document.getElementById("task-popover");
   const box = document.getElementById("popover-box");
-  const closeBtn = document.getElementById("popover-close");
-  const notesEl = document.getElementById("popover-notes") as HTMLTextAreaElement | null;
   const groupsEl = document.getElementById("popover-groups");
   const discardBtn = document.getElementById("popover-discard");
 
@@ -127,17 +125,6 @@ function initPopover(): void {
     }
   }
 
-  closeBtn?.addEventListener("click", closePopover);
-
-  notesEl?.addEventListener("blur", () => {
-    if (currentPopoverTaskId === null) return;
-    const node = document.querySelector<HTMLElement>(`[data-task-id="${currentPopoverTaskId}"]`);
-    if (!node) return;
-    const updateUrl = node.getAttribute("data-update-url") ?? "";
-    postForm(updateUrl, new URLSearchParams({ notes: notesEl.value }));
-    node.dataset.notes = notesEl.value;
-  });
-
   discardBtn?.addEventListener("click", () => {
     if (currentPopoverTaskId === null) return;
     const node = document.querySelector<HTMLElement>(`[data-task-id="${currentPopoverTaskId}"]`);
@@ -155,10 +142,9 @@ function initPopover(): void {
   });
 }
 
-function openPopover(taskId: number, anchor: HTMLElement): void {
+function openPopover(taskId: number, anchorOrPos: HTMLElement | { x: number; y: number }): void {
   const popover = document.getElementById("task-popover");
   const box = document.getElementById("popover-box") as HTMLElement | null;
-  const notesEl = document.getElementById("popover-notes") as HTMLTextAreaElement | null;
   const groupsEl = document.getElementById("popover-groups");
   if (!popover || !box) return;
 
@@ -167,8 +153,6 @@ function openPopover(taskId: number, anchor: HTMLElement): void {
   const node = document.querySelector<HTMLElement>(`[data-task-id="${taskId}"]`);
   if (!node) return;
 
-  if (notesEl) notesEl.value = node.dataset.notes ?? "";
-
   const currentGroupId = node.dataset.groupId ?? "";
   groupsEl?.querySelectorAll<HTMLElement>(".js-swatch").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.groupId === currentGroupId);
@@ -176,14 +160,23 @@ function openPopover(taskId: number, anchor: HTMLElement): void {
 
   popover.removeAttribute("hidden");
 
-  // Position relative to anchor
-  const anchorRect = anchor.getBoundingClientRect();
-  let top = anchorRect.bottom + 6;
-  let left = anchorRect.left;
-  const boxW = box.offsetWidth || 260;
-  const boxH = box.offsetHeight || 180;
+  // Position: from anchor element or from cursor coordinates
+  let rawLeft: number, rawTop: number;
+  if (anchorOrPos instanceof HTMLElement) {
+    const rect = anchorOrPos.getBoundingClientRect();
+    rawLeft = rect.left;
+    rawTop = rect.bottom + 6;
+  } else {
+    rawLeft = anchorOrPos.x;
+    rawTop = anchorOrPos.y + 4;
+  }
+
+  const boxW = box.offsetWidth || 180;
+  const boxH = box.offsetHeight || 120;
+  let left = rawLeft;
+  let top = rawTop;
   if (left + boxW > window.innerWidth - 8) left = window.innerWidth - boxW - 8;
-  if (top + boxH > window.innerHeight - 8) top = anchorRect.top - boxH - 6;
+  if (top + boxH > window.innerHeight - 8) top = rawTop - boxH - 4;
   box.style.top = `${top + window.scrollY}px`;
   box.style.left = `${left}px`;
 }
@@ -324,24 +317,6 @@ function renumberTasks(tree: HTMLElement): void {
 
 let dragAllowed = false;
 
-function inferGroupFromNeighbors(tree: HTMLElement, el: HTMLElement): number | null {
-  // Only root tasks participate in positional group inheritance
-  if (el.dataset.parentId !== "") return null;
-
-  const roots = Array.from(tree.querySelectorAll<HTMLElement>("[data-task-id]")).filter(
-    n => n.dataset.parentId === "",
-  );
-  const idx = roots.indexOf(el);
-  if (idx === -1) return null;
-
-  const prevGroupId = idx > 0 ? (roots[idx - 1].dataset.groupId || null) : null;
-  const nextGroupId = idx < roots.length - 1 ? (roots[idx + 1].dataset.groupId || null) : null;
-
-  // Both neighbours share the same non-null group → inherit it
-  if (prevGroupId && nextGroupId && prevGroupId === nextGroupId) return Number(prevGroupId);
-  return null;
-}
-
 function getDomDescendants(tree: HTMLElement, taskId: number): HTMLElement[] {
   const result: HTMLElement[] = [];
   function collect(pid: number) {
@@ -373,8 +348,8 @@ function initDragAndDrop(): void {
   });
 
   tree.addEventListener("dragend", () => {
-    tree.querySelectorAll(".dragging, .drop-before, .drop-after").forEach(el => {
-      el.classList.remove("dragging", "drop-before", "drop-after");
+    tree.querySelectorAll(".dragging, .drop-before, .drop-into, .drop-after").forEach(el => {
+      el.classList.remove("dragging", "drop-before", "drop-into", "drop-after");
     });
   });
 
@@ -383,17 +358,24 @@ function initDragAndDrop(): void {
     e.dataTransfer!.dropEffect = "move";
     const target = (e.target as HTMLElement).closest<HTMLElement>("[data-task-id]");
     if (!target) return;
-    tree.querySelectorAll(".drop-before, .drop-after").forEach(el => {
-      el.classList.remove("drop-before", "drop-after");
+    tree.querySelectorAll(".drop-before, .drop-into, .drop-after").forEach(el => {
+      el.classList.remove("drop-before", "drop-into", "drop-after");
     });
     const rect = target.getBoundingClientRect();
-    target.classList.add(e.clientY < rect.top + rect.height / 2 ? "drop-before" : "drop-after");
+    const relY = (e.clientY - rect.top) / rect.height;
+    if (relY < 0.3) {
+      target.classList.add("drop-before");
+    } else if (relY < 0.7) {
+      target.classList.add("drop-into");
+    } else {
+      target.classList.add("drop-after");
+    }
   });
 
   tree.addEventListener("dragleave", (e) => {
     if (!tree.contains(e.relatedTarget as Node)) {
-      tree.querySelectorAll(".drop-before, .drop-after").forEach(el => {
-        el.classList.remove("drop-before", "drop-after");
+      tree.querySelectorAll(".drop-before, .drop-into, .drop-after").forEach(el => {
+        el.classList.remove("drop-before", "drop-into", "drop-after");
       });
     }
   });
@@ -408,20 +390,36 @@ function initDragAndDrop(): void {
     if (!draggedEl) return;
 
     const isBefore = target.classList.contains("drop-before");
+    const isInto  = target.classList.contains("drop-into");
+
+    // drop-into  → dragged task becomes a child of target
+    // drop-before/after → dragged task becomes a sibling of target (same parent)
+    const newParentId: string = isInto
+      ? (target.dataset.taskId ?? "")
+      : (target.dataset.parentId ?? "");
+
+    const oldParentId = draggedEl.dataset.parentId ?? "";
+    const parentChanged = newParentId !== oldParentId;
+
+    // Depth is encoded in the existing inline padding-left (depth * 1.5rem)
+    const oldDepth   = Math.round((parseFloat(draggedEl.style.paddingLeft) || 0) / 1.5);
+    const targetDepth = Math.round((parseFloat(target.style.paddingLeft) || 0) / 1.5);
+    const newDepth   = isInto ? targetDepth + 1 : targetDepth;
+    const depthDelta = newDepth - oldDepth;
 
     // Compute descendants before any DOM mutation
     const descendants = getDomDescendants(tree, droppedId);
 
-    // Guard: dropping onto a descendant would move that node into the fragment
-    // then try to insertBefore a node no longer in the tree → nodes disappear
+    // Guard: cannot drop a task onto one of its own descendants
     const descendantIds = new Set(descendants.map(el => Number(el.dataset.taskId)));
     if (descendantIds.has(Number(target.dataset.taskId))) {
-      tree.querySelectorAll(".dragging, .drop-before, .drop-after").forEach(el => {
-        el.classList.remove("dragging", "drop-before", "drop-after");
+      tree.querySelectorAll(".dragging, .drop-before, .drop-into, .drop-after").forEach(el => {
+        el.classList.remove("dragging", "drop-before", "drop-into", "drop-after");
       });
       return;
     }
 
+    // Move dragged element (and its descendants) to the new position
     const moveGroup = [draggedEl, ...descendants];
     const fragment = document.createDocumentFragment();
     moveGroup.forEach(el => fragment.appendChild(el));
@@ -429,26 +427,46 @@ function initDragAndDrop(): void {
     if (isBefore) {
       tree.insertBefore(fragment, target);
     } else {
+      // drop-after and drop-into both insert after the target's last descendant
       const targetDesc = getDomDescendants(tree, Number(target.dataset.taskId));
       const anchor = targetDesc.length ? targetDesc[targetDesc.length - 1] : target;
       tree.insertBefore(fragment, anchor.nextSibling);
     }
 
-    tree.querySelectorAll(".dragging, .drop-before, .drop-after").forEach(el => {
-      el.classList.remove("dragging", "drop-before", "drop-after");
+    tree.querySelectorAll(".dragging, .drop-before, .drop-into, .drop-after").forEach(el => {
+      el.classList.remove("dragging", "drop-before", "drop-into", "drop-after");
     });
+
+    // Update parent attribute and visual indentation when the parent changed
+    if (parentChanged || depthDelta !== 0) {
+      draggedEl.dataset.parentId = newParentId;
+      draggedEl.style.paddingLeft = `${Math.max(0, newDepth * 1.5)}rem`;
+
+      descendants.forEach(d => {
+        const dp = parseFloat(d.style.paddingLeft) || 0;
+        d.style.paddingLeft = `${Math.max(0, dp + depthDelta * 1.5)}rem`;
+      });
+
+      // Add order-num span when becoming a root task; remove it when becoming a subtask
+      const numEl = draggedEl.querySelector<HTMLElement>(".task-order-num");
+      if (!newParentId && !numEl) {
+        const span = document.createElement("span");
+        span.className = "task-order-num";
+        span.textContent = "0";
+        draggedEl.querySelector(".task-drag-handle")?.insertAdjacentElement("afterend", span);
+      } else if (newParentId && numEl) {
+        numEl.remove();
+      }
+    }
+
     renumberTasks(tree);
 
-    // Infer whether the dragged task should join or leave a group based on its new neighbours
-    const newGroupId = inferGroupFromNeighbors(tree, draggedEl);
-    const currentGroupId = draggedEl.dataset.groupId ? Number(draggedEl.dataset.groupId) : null;
-    const groupChanged = newGroupId !== currentGroupId;
-    if (groupChanged) updateGroupBadge(draggedEl, newGroupId);
-
-    // Build reorder payload; include group_id for dragged item if it changed
+    // Send updated order and, if changed, the new parent to the server
     const items = Array.from(tree.querySelectorAll<HTMLElement>("[data-task-id]")).map((el, i) => {
       const item: Record<string, unknown> = { id: Number(el.dataset.taskId), order: i };
-      if (el === draggedEl && groupChanged) item.group_id = newGroupId;
+      if (el === draggedEl && parentChanged) {
+        item.parent_id = newParentId ? Number(newParentId) : null;
+      }
       return item;
     });
     await postForm(reorderUrl, new URLSearchParams({ items: JSON.stringify(items) }));
@@ -522,6 +540,15 @@ function createInlineForm(parentId: number, date: string, createUrl: string): HT
 function initTaskTreeEvents(): void {
   const tree = document.getElementById("task-tree");
   if (!tree) return;
+
+  tree.addEventListener("contextmenu", (e) => {
+    const node = (e.target as HTMLElement).closest<HTMLElement>("[data-task-id]");
+    if (!node || !node.querySelector(".js-edit-trigger")) return;
+    e.preventDefault();
+    const taskId = Number(node.dataset.taskId);
+    if (currentPopoverTaskId === taskId) { closePopover(); return; }
+    openPopover(taskId, { x: e.clientX, y: e.clientY });
+  });
 
   tree.addEventListener("click", async (e) => {
     const target = e.target as HTMLElement;

@@ -102,6 +102,11 @@
         border-radius: 0;
     }
 
+    &.drop-into .task-item {
+        box-shadow: inset 0 0 0 2px rgba(orange, 0.6);
+        border-radius: 6px;
+    }
+
     &.drop-after {
         border-bottom: 2px solid orange;
         border-radius: 0;
@@ -298,6 +303,32 @@
     }
 }
 
+// ─── Shared form-input inside modals/popovers ─────────────────────────────────
+
+.task-discard-modal,
+.task-popover {
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(white, 0.2);
+        border-radius: 6px;
+        color: white;
+        font-size: 1rem;
+        font-family: inherit;
+        resize: vertical;
+
+        &:focus {
+            outline: none;
+            border-color: orange;
+        }
+
+        &::placeholder {
+            color: rgba(white, 0.35);
+        }
+    }
+}
+
 // ─── Discard modal ────────────────────────────────────────────────────────────
 
 .task-discard-modal {
@@ -362,39 +393,62 @@
         position: absolute;
         background: vars.$bg-color;
         border: 1px solid rgba(white, 0.15);
-        border-radius: 10px;
-        padding: 1rem;
-        min-width: 220px;
-        max-width: 280px;
+        border-radius: 8px;
+        padding: 0.35rem 0;
+        min-width: 160px;
         box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
         z-index: 500;
+        overflow: hidden;
     }
 
     .popover-section {
-        margin-bottom: 0.75rem;
+        padding: 0.35rem 0.75rem 0.4rem;
+    }
+
+    .popover-label {
+        display: block;
+        font-size: 0.68rem;
+        opacity: 0.45;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.35rem;
     }
 
     .popover-groups {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.4rem;
-        margin-bottom: 0.75rem;
+        gap: 0.35rem;
     }
 
-    .popover-notes {
-        width: 100%;
-        font-size: 0.85rem;
-        resize: vertical;
-        min-height: 3.5rem;
-    }
-
-    .popover-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 0.5rem;
-        padding-top: 0.5rem;
+    .popover-divider {
+        border: none;
         border-top: 1px solid rgba(white, 0.08);
+        margin: 0.3rem 0;
+    }
+
+    .popover-menu-item {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        font-family: inherit;
+
+        &:hover {
+            background: rgba(white, 0.07);
+        }
+
+        &.popover-menu-item-danger {
+            color: rgb(255, 100, 100);
+
+            &:hover {
+                background: rgba(255, 100, 100, 0.1);
+            }
+        }
     }
 }
 
