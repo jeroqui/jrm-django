@@ -63,8 +63,8 @@
     </div>
 </div>
 
-<!-- Group data for JS popover -->
-<script id="task-groups-data" type="application/json">{{ groups_json }}</script>
+<!-- Group data for JS popover (json_script escapes safely for raw-text script tags) -->
+{{ groups_list|json_script:"task-groups-data" }}
 
 <!-- Task options popover -->
 <div class="task-popover" id="task-popover" hidden>

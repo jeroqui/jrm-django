@@ -45,10 +45,7 @@ def task_list(request):
     tasks = get_tasks_for_date(user=request.user, target_date=today)
     nodes = flatten_task_tree(tasks)
     groups = list(TaskGroup.objects.filter(user=request.user))
-    groups_json = _json.dumps([
-        {"id": g.pk, "name": g.name, "color": g.color}
-        for g in groups
-    ])
+    groups_list = [{"id": g.pk, "name": g.name, "color": g.color} for g in groups]
 
     return render(
         request,
@@ -56,7 +53,7 @@ def task_list(request):
         {
             "nodes": nodes,
             "groups": groups,
-            "groups_json": groups_json,
+            "groups_list": groups_list,
             "today": today,
         },
     )
