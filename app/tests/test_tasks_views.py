@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
@@ -109,69 +109,6 @@ class TaskCreateViewTests(TestCase):
         self.assertFalse(form.fields["group"].queryset.filter(user=other).exists())
 
 
-class TaskCompleteViewTests(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="admin", email="admin@example.com", password="pass", is_staff=True
-        )
-        self.client.force_login(self.user)
-
-    def test_complete_marks_task_and_descendants(self):
-        today = timezone.localdate()
-        parent = Task.objects.create(user=self.user, title="Parent", scheduled_date=today)
-        child = Task.objects.create(user=self.user, title="Child", parent=parent, scheduled_date=today)
-
-        self.client.post(reverse("app:task_complete", kwargs={"pk": parent.pk}))
-
-        parent.refresh_from_db()
-        child.refresh_from_db()
-        self.assertEqual(parent.status, Task.Status.COMPLETED)
-        self.assertEqual(child.status, Task.Status.COMPLETED)
-
-    def test_complete_other_user_task_returns_404(self):
-        other = User.objects.create_user(username="other", password="pass", is_staff=True)
-        today = timezone.localdate()
-        task = Task.objects.create(user=other, title="Other task", scheduled_date=today)
-
-        response = self.client.post(reverse("app:task_complete", kwargs={"pk": task.pk}))
-        self.assertEqual(response.status_code, 404)
-
-
-class TaskDiscardViewTests(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="admin", email="admin@example.com", password="pass", is_staff=True
-        )
-        self.client.force_login(self.user)
-        self.task = Task.objects.create(
-            user=self.user, title="To discard", scheduled_date=timezone.localdate()
-        )
-
-    def test_get_shows_fallback_form(self):
-        response = self.client.get(reverse("app:task_discard", kwargs={"pk": self.task.pk}))
-        self.assertEqual(response.status_code, 200)
-
-    def test_post_with_reason_discards_task(self):
-        self.client.post(
-            reverse("app:task_discard", kwargs={"pk": self.task.pk}),
-            {"reason": "Not needed anymore"},
-        )
-        self.task.refresh_from_db()
-        self.assertEqual(self.task.status, Task.Status.DISCARDED)
-        self.assertEqual(self.task.discard_reason, "Not needed anymore")
-
-    def test_post_without_reason_shows_error(self):
-        response = self.client.post(
-            reverse("app:task_discard", kwargs={"pk": self.task.pk}),
-            {"reason": ""},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.task.refresh_from_db()
-        self.assertEqual(self.task.status, Task.Status.PENDING)
-
-
 class TaskCleanupViewTests(TestCase):
     def setUp(self):
         self.client = Client()
@@ -257,9 +194,6 @@ class TaskStatsViewTests(TestCase):
         response = self.client.get(reverse("app:task_stats"))
         self.assertEqual(response.status_code, 200)
         self.assertIn("chart", response.context)
-
-
-import json
 
 
 class TaskApiCreateTests(TestCase):
@@ -460,93 +394,3 @@ class TaskApiUpdateTests(TestCase):
         self.assertEqual(self.task.group, group)
 
 
-class TaskApiReorderTests(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username="admin", email="admin@example.com", password="pass", is_staff=True
-        )
-        self.client.force_login(self.user)
-        self.today = timezone.localdate()
-        self.url = reverse("app:task_api_reorder")
-
-    def _task(self, title, order=0, group=None):
-        return Task.objects.create(
-            user=self.user, title=title,
-            scheduled_date=self.today, order=order, group=group,
-        )
-
-    def _post(self, items):
-        return self.client.post(self.url, {"items": json.dumps(items)})
-
-    def test_reorder_updates_order_fields(self):
-        t1 = self._task("First", order=0)
-        t2 = self._task("Second", order=1)
-        response = self._post([{"id": t2.pk, "order": 0}, {"id": t1.pk, "order": 1}])
-        self.assertEqual(response.json(), {"ok": True})
-        t1.refresh_from_db()
-        t2.refresh_from_db()
-        self.assertEqual(t2.order, 0)
-        self.assertEqual(t1.order, 1)
-
-    def test_reorder_assigns_group_via_group_id(self):
-        group = TaskGroup.objects.create(user=self.user, name="Work", color="orange")
-        t1 = self._task("Task", order=0)
-        self.assertIsNone(t1.group)
-        response = self._post([{"id": t1.pk, "order": 0, "group_id": group.pk}])
-        self.assertEqual(response.json(), {"ok": True})
-        t1.refresh_from_db()
-        self.assertEqual(t1.group, group)
-
-    def test_reorder_removes_group_when_group_id_null(self):
-        group = TaskGroup.objects.create(user=self.user, name="Work", color="orange")
-        t1 = self._task("Task", order=0, group=group)
-        self.assertEqual(t1.group, group)
-        response = self._post([{"id": t1.pk, "order": 0, "group_id": None}])
-        self.assertEqual(response.json(), {"ok": True})
-        t1.refresh_from_db()
-        self.assertIsNone(t1.group)
-
-    def test_reorder_ignores_group_id_from_other_user(self):
-        other = User.objects.create_user(username="other", password="p", is_staff=True)
-        other_group = TaskGroup.objects.create(user=other, name="Private", color="red")
-        t1 = self._task("Task", order=0)
-        self._post([{"id": t1.pk, "order": 0, "group_id": other_group.pk}])
-        t1.refresh_from_db()
-        self.assertIsNone(t1.group)
-
-    def test_reorder_does_not_affect_other_users_tasks(self):
-        other = User.objects.create_user(username="other2", password="p", is_staff=True)
-        other_task = Task.objects.create(user=other, title="T", scheduled_date=self.today, order=99)
-        t1 = self._task("Mine", order=0)
-        # Try to reorder other_task alongside own task
-        self._post([{"id": t1.pk, "order": 0}, {"id": other_task.pk, "order": 1}])
-        other_task.refresh_from_db()
-        self.assertEqual(other_task.order, 99)  # unchanged
-
-    def test_reorder_omitting_group_id_leaves_group_unchanged(self):
-        group = TaskGroup.objects.create(user=self.user, name="Work", color="orange")
-        t1 = self._task("First", order=10, group=group)
-        t2 = self._task("Second", order=20)
-        # Send t1 second (index 1) without group_id — group must not change
-        self._post([{"id": t2.pk, "order": 0}, {"id": t1.pk, "order": 1}])
-        t1.refresh_from_db()
-        self.assertEqual(t1.group, group)   # group preserved (no group_id key)
-        self.assertEqual(t1.order, 1)       # position is enumeration index, not payload value
-
-    def test_reorder_invalid_json_returns_error(self):
-        response = self.client.post(self.url, {"items": "not-json"})
-        data = response.json()
-        self.assertFalse(data["ok"])
-
-    def test_reorder_requires_post(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 405)
-
-    def test_non_staff_returns_403(self):
-        self.client.logout()
-        regular = User.objects.create_user(username="u2", password="p", is_staff=False)
-        self.client.force_login(regular)
-        t1 = Task.objects.create(user=self.user, title="T", scheduled_date=self.today)
-        response = self._post([{"id": t1.pk, "order": 0}])
-        self.assertEqual(response.status_code, 403)

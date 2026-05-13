@@ -142,7 +142,7 @@ export function closePopover(): void {
   currentPopoverTaskId = null;
 }
 
-export function updateGroupBadge(node: HTMLElement, groupId: number | null): void {
+function updateGroupBadge(node: HTMLElement, groupId: number | null): void {
   node.dataset.groupId = groupId !== null ? String(groupId) : "";
   const existing = node.querySelector(".task-group-badge");
   if (groupId !== null) {
@@ -164,7 +164,7 @@ export function updateGroupBadge(node: HTMLElement, groupId: number | null): voi
   }
 }
 
-export async function applyGroupChange(groupId: number | null): Promise<void> {
+async function applyGroupChange(groupId: number | null): Promise<void> {
   if (currentPopoverTaskId === null) return;
   const node = document.querySelector<HTMLElement>(`[data-task-id="${currentPopoverTaskId}"]`);
   if (!node) return;

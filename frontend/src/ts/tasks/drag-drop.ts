@@ -5,7 +5,7 @@ import { renumberTasks } from "./dom";
 
 let dragAllowed = false;
 
-export function getDomDescendants(tree: HTMLElement, taskId: number): HTMLElement[] {
+function getDomDescendants(tree: HTMLElement, taskId: number): HTMLElement[] {
   const result: HTMLElement[] = [];
   function collect(pid: number) {
     tree.querySelectorAll<HTMLElement>(`[data-parent-id="${pid}"]`).forEach(el => {

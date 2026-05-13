@@ -181,15 +181,3 @@ class TaskForm(forms.ModelForm):
         self.fields["parent"].required = False
 
 
-class TaskDiscardForm(forms.Form):
-    reason = forms.CharField(
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-input",
-                "rows": 3,
-                "placeholder": "Per què descartes aquesta tasca?",
-            }
-        ),
-        label="Motiu",
-    )
-

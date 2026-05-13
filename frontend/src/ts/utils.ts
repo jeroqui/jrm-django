@@ -1,4 +1,4 @@
-export function getCsrf(): string {
+function getCsrf(): string {
   const match = document.cookie.match(/csrftoken=([^;]+)/);
   return match ? decodeURIComponent(match[1]) : "";
 }

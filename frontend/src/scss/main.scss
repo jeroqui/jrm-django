@@ -119,24 +119,8 @@ h2 {
   color: vars.$bg-color;
 }
 
-.bg-bg {
-  background-color: vars.$bg-color;
-}
-
-.color-bg-light {
-  color: vars.$bg-color-light;
-}
-
-.bg-bg-light {
-  background-color: vars.$bg-color-light;
-}
-
 .color-primary {
   color: vars.$primary-color;
-}
-
-.bg-primary {
-  background-color: vars.$primary-color;
 }
 
 // ==========================================================================
@@ -212,10 +196,6 @@ hr.subtitle {
 
 .hint {
   opacity: 0.5;
-}
-
-.separator {
-  margin-top: 6rem;
 }
 
 .tag {

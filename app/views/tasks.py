@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from app.forms import TaskDiscardForm, TaskForm, TaskGroupForm
+from app.forms import TaskForm, TaskGroupForm
 from app.models import Task, TaskGroup
 from app.services.tasks import (
     FlatTaskNode,
@@ -114,45 +114,6 @@ def task_edit(request, pk):
         request,
         "app/dashboard/task_form.html",
         {"form": form, "task": task, "title": "Editar tasca"},
-    )
-
-
-@login_required
-def task_complete(request, pk):
-    denied = _staff_required(request)
-    if denied:
-        return denied
-
-    if request.method != "POST":
-        return redirect("app:task_list")
-
-    task = get_object_or_404(Task, pk=pk, user=request.user)
-    complete_task(task=task)
-    messages.success(request, f"«{task.title}» completada.")
-    return redirect("app:task_list")
-
-
-@login_required
-def task_discard(request, pk):
-    denied = _staff_required(request)
-    if denied:
-        return denied
-
-    task = get_object_or_404(Task, pk=pk, user=request.user)
-
-    if request.method == "POST":
-        form = TaskDiscardForm(request.POST)
-        if form.is_valid():
-            discard_task(task=task, reason=form.cleaned_data["reason"])
-            messages.success(request, f"«{task.title}» descartada.")
-            return redirect("app:task_list")
-    else:
-        form = TaskDiscardForm()
-
-    return render(
-        request,
-        "app/dashboard/task_discard.html",
-        {"form": form, "task": task},
     )
 
 
