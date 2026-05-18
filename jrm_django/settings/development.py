@@ -39,6 +39,9 @@ HTML_MINIFY = False
 EXCLUDE_FROM_MINIFYING = ['^admin/']
 
 # Whitenoise (simple config for dev)
+# Re-read changed files from disk on every request so collectstatic is picked up without restart
+WHITENOISE_AUTOREFRESH = True
+
 STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',

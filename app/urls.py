@@ -44,6 +44,22 @@ urlpatterns = [
     ),
     path("dashboard/habits/day/", views.habit_day, name="habit_day"),
 
+    # Tasks (staff only)
+    path("dashboard/tasks/", views.task_list, name="task_list"),
+    path("dashboard/tasks/new/", views.task_create, name="task_create"),
+    path("dashboard/tasks/<int:pk>/edit/", views.task_edit, name="task_edit"),
+    path("dashboard/tasks/cleanup/", views.task_cleanup, name="task_cleanup"),
+    path("dashboard/tasks/stats/", views.task_stats, name="task_stats"),
+    path("dashboard/task-groups/", views.task_group_list, name="task_group_list"),
+    path("dashboard/task-groups/<int:pk>/edit/", views.task_group_edit, name="task_group_edit"),
+    path("dashboard/task-groups/<int:pk>/delete/", views.task_group_delete, name="task_group_delete"),
+    path("dashboard/tasks/api/create/", views.task_api_create, name="task_api_create"),
+    path("dashboard/tasks/api/reorder/", views.task_api_reorder, name="task_api_reorder"),
+    path("dashboard/tasks/<int:pk>/api/complete/", views.task_api_complete, name="task_api_complete"),
+    path("dashboard/tasks/<int:pk>/api/discard/", views.task_api_discard, name="task_api_discard"),
+    path("dashboard/tasks/<int:pk>/api/reschedule/", views.task_api_reschedule, name="task_api_reschedule"),
+    path("dashboard/tasks/<int:pk>/api/update/", views.task_api_update, name="task_api_update"),
+
     # Projects
     path("projects/", views.projects_index, name="projects"),
     path("projects/de-que-va/", views.project_de_que_va, name="project_de_que_va"),

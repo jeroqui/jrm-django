@@ -1,0 +1,51 @@
+<div class="task-node{% if node.task.status != 'pending' %} task-done{% endif %}"
+     data-task-id="{{ node.task.pk }}"
+     data-parent-id="{{ node.task.parent_id|default:'' }}"
+     data-notes="{{ node.task.notes|escapejs }}"
+     data-group-id="{{ node.task.group_id|default:'' }}"
+     data-order="{{ node.task.order }}"
+     data-complete-url="{% url 'app:task_api_complete' node.task.pk %}"
+     data-discard-url="{% url 'app:task_api_discard' node.task.pk %}"
+     data-reschedule-url="{% url 'app:task_api_reschedule' node.task.pk %}"
+     data-update-url="{% url 'app:task_api_update' node.task.pk %}"
+     draggable="true"
+     style="padding-left: {{ node.indent_rem }}rem">
+    <div class="task-item">
+        <span class="task-drag-handle" title="Arrossegar per ordenar">⠿</span>
+        {% if node.order_num %}<span class="task-order-num">{{ node.order_num }}</span>{% endif %}
+        <input
+            type="checkbox"
+            class="task-checkbox{% if node.task.status == 'pending' %} js-complete-check{% endif %}"
+            {% if node.task.status != 'pending' %}checked disabled{% endif %}
+            title="{% if node.task.status == 'pending' %}Marcar com a fet{% endif %}"
+        >
+        {% if node.task.group %}
+        <span class="task-group-badge" style="--group-color: {{ node.task.group.color }}">
+            {{ node.task.group.name }}
+        </span>
+        {% endif %}
+        <span class="task-title{% if node.task.status == 'pending' %} js-editable-title{% endif %}">{{ node.task.title }}</span>
+        {% if node.task.status == 'completed' %}
+        <span class="task-status-badge task-status-completed">✓</span>
+        {% elif node.task.status == 'discarded' %}
+        <span class="task-status-badge task-status-discarded">✗</span>
+        {% endif %}
+        {% if node.task.status == 'pending' %}
+        <div class="task-actions">
+            <button
+                type="button"
+                class="btn-link btn-small btn-secondary js-add-subtask"
+                data-task-id="{{ node.task.pk }}"
+                data-date="{{ node.task.scheduled_date|date:'Y-m-d' }}"
+                title="Afegir subtasca"
+            >+</button>
+            <button
+                type="button"
+                class="btn-link btn-small btn-secondary js-edit-trigger"
+                data-task-id="{{ node.task.pk }}"
+                title="Opcions"
+            >···</button>
+        </div>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,133 @@
+{% extends 'app/dashboard_base.html' %}
+
+{% block title %}Tasques{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <a href="{% url 'app:dashboard' %}" class="back-link">← Tornar al dashboard</a>
+        <h1>Tasques</h1>
+
+        <div class="dashboard-grid tasks-grid">
+            <div class="dashboard-card tasks-card">
+                <div class="card-header">
+                    <h2>Avui · {{ today|date:"d/m/Y" }}</h2>
+                    <div class="card-header-actions">
+                        <a href="{% url 'app:task_stats' %}" class="btn-link btn-secondary">Estadístiques</a>
+                        <a href="{% url 'app:task_group_list' %}" class="btn-link btn-secondary">Grups</a>
+                    </div>
+                </div>
+
+                <!-- Quick-add form -->
+                <form
+                    class="task-quick-add"
+                    id="task-quick-add"
+                    data-create-url="{% url 'app:task_api_create' %}"
+                    data-scheduled-date="{{ today|date:'Y-m-d' }}"
+                >
+                    {% csrf_token %}
+                    <input
+                        type="text"
+                        name="title"
+                        class="form-input task-quick-input"
+                        placeholder="Nova tasca…"
+                        autocomplete="off"
+                        autofocus
+                    >
+                    {% if groups %}
+                    <select name="group" class="form-input task-quick-group">
+                        <option value="">Sense grup</option>
+                        {% for group in groups %}
+                        <option value="{{ group.pk }}" data-color="{{ group.color }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                    <button type="submit" class="btn-link task-quick-submit" title="Afegir tasca">+</button>
+                </form>
+
+                <!-- Task tree -->
+                <div class="task-tree" id="task-tree"
+                     data-reorder-url="{% url 'app:task_api_reorder' %}">
+                    {% if nodes %}
+                        {% for node in nodes %}
+                        {% include 'app/dashboard/_task_node.html' with node=node %}
+                        {% endfor %}
+                    {% else %}
+                    <div class="card-empty" id="task-empty-state">
+                        <p>Cap tasca per avui. Afegeix-ne una!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if future_tasks %}
+    <div class="section future-tasks-section">
+        <details class="future-tasks-details">
+            <summary class="future-tasks-summary">Pròximes tasques</summary>
+            <div class="future-tasks-body">
+                {% for group in future_tasks %}
+                <div class="future-date-group">
+                    <h3 class="future-date-heading">{{ group.date|date:"l, d/m/Y" }}</h3>
+                    <ul class="future-task-list">
+                        {% for task in group.tasks %}
+                        <li class="future-task-item">
+                            <span class="future-task-title">{{ task.title }}</span>
+                            {% if task.group %}
+                            <span class="task-group-badge" style="--group-color: {{ task.group.color }}">{{ task.group.name }}</span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Group data for JS popover (json_script escapes safely for raw-text script tags) -->
+{{ groups_list|json_script:"task-groups-data" }}
+
+<!-- Task options popover -->
+<div class="task-popover" id="task-popover" hidden>
+    <div class="popover-box" id="popover-box">
+        <div class="popover-section">
+            <span class="popover-label">Grup</span>
+            <div class="popover-groups" id="popover-groups"></div>
+        </div>
+        <hr class="popover-divider">
+        <button type="button" class="popover-menu-item" id="popover-reschedule">Reprograma</button>
+        <div class="popover-reschedule-form" id="popover-reschedule-form" hidden>
+            <input type="date" class="popover-date-input" id="popover-reschedule-date">
+            <button type="button" class="btn-link btn-small" id="popover-reschedule-confirm">OK</button>
+        </div>
+        <button type="button" class="popover-menu-item popover-menu-item-danger" id="popover-discard">Descartar</button>
+    </div>
+</div>
+
+<!-- Discard modal -->
+<div class="task-discard-modal" id="task-discard-modal" hidden>
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-box">
+        <h3>Descartar tasca</h3>
+        <p class="modal-task-title" id="modal-task-title"></p>
+        <div class="form-group">
+            <label for="modal-reason">Motiu</label>
+            <textarea
+                id="modal-reason"
+                class="form-input"
+                rows="3"
+                placeholder="Per què descartes aquesta tasca?"
+            ></textarea>
+        </div>
+        <div class="form-actions modal-actions">
+            <button type="button" class="btn-link btn-secondary" id="modal-cancel">Cancel·lar</button>
+            <button type="button" class="btn-link btn-danger" id="modal-confirm">Descartar</button>
+        </div>
+        <p class="modal-error" id="modal-error" hidden></p>
+    </div>
+</div>
+{% endblock %}

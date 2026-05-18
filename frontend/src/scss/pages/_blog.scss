@@ -283,33 +283,6 @@
   }
 
   .auth-form {
-    .form-group {
-      margin-bottom: 1.5rem;
-
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-        opacity: 0.8;
-      }
-
-      input {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(white, 0.2);
-        border-radius: 4px;
-        color: white;
-        font-size: 1rem;
-        font-family: inherit;
-
-        &:focus {
-          outline: none;
-          border-color: vars.$primary-color;
-        }
-      }
-    }
-
     .btn-full {
       width: 100%;
       justify-content: center;

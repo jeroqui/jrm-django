@@ -1,6 +1,9 @@
 @use "../variables" as vars;
 
-.btn-link {
+// ─── Base button / primary ────────────────────────────────────────────────────
+
+.btn-link,
+.btn-primary {
   display: inline-flex;
   align-items: center;
   font-size: 1.2em;
@@ -8,12 +11,13 @@
   font-family: inherit;
   margin: 0.4rem;
   padding: 0.5rem 1.5rem;
-  outline: 0px solid rgba(255, 166, 0, 0);
   border: none;
   border-radius: 0.8rem;
   background-color: vars.$primary-color;
   color: vars.$text-color;
   text-decoration: none;
+  cursor: pointer;
+  outline: 0px solid rgba(255, 166, 0, 0);
   transition: background-color vars.$hover-time ease, outline 0.1s ease;
 
   &:hover {
@@ -25,3 +29,32 @@
   }
 }
 
+// ─── Modifiers ────────────────────────────────────────────────────────────────
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(white, 0.3);
+  color: inherit;
+
+  &:hover {
+    background: rgba(white, 0.1);
+    border-color: rgba(white, 0.7);
+  }
+}
+
+.btn-danger {
+  background: rgba(200, 80, 80, 0.8);
+  border: 1px solid rgba(255, 100, 100, 0.5);
+  color: white;
+
+  &:hover {
+    background: rgba(220, 80, 80, 1);
+  }
+}
+
+.btn-small {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  line-height: 1;
+  margin: 0;
+}

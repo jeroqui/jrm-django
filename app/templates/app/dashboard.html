@@ -136,7 +136,43 @@
                 </div>
                 {% endif %}
             </div>
-        </div>
-    </div>
-</div>
+
+            {% if request.user.is_staff %}
+            <!-- Tasks Card (staff only) -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2>Tasques</h2>
+                    <div class="card-header-actions">
+                        <a href="{% url 'app:task_list' %}" class="btn-link">Gestiona</a>
+                    </div>
+                </div>
+
+                {% if overdue_count %}
+                <div class="card-stats">
+                    <div class="stat">
+                        <span class="stat-value">{{ pending_task_count }}</span>
+                        <span class="stat-label">Pendents avui</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" style="color:#faa">{{ overdue_count }}</span>
+                        <span class="stat-label">Endarrerides</span>
+                    </div>
+                </div>
+                {% elif pending_task_count %}
+                <div class="card-stats">
+                    <div class="stat">
+                        <span class="stat-value">{{ pending_task_count }}</span>
+                        <span class="stat-label">Pendents avui</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card-empty">
+                    <p>Cap tasca pendent per avui.</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div><!-- /.dashboard-grid -->
+    </div><!-- /.section -->
+</div><!-- /.dashboard-page -->
 {% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'app/dashboard_base.html' %}
+
+{% block title %}Descartar tasca{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <a href="{% url 'app:task_list' %}" class="back-link">← Tornar a les tasques</a>
+
+        <div class="form-card episode-form">
+            <h1>Descartar tasca</h1>
+            <p class="sidenote">«{{ task.title }}»</p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-group{% if form.reason.errors %} has-error{% endif %}">
+                    <label for="{{ form.reason.id_for_label }}">{{ form.reason.label }}</label>
+                    {{ form.reason }}
+                    {% for error in form.reason.errors %}
+                    <div class="field-errors"><div class="error">{{ error }}</div></div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'app:task_list' %}" class="btn-link btn-secondary">Cancel·lar</a>
+                    <button type="submit" class="btn-link btn-danger">Descartar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

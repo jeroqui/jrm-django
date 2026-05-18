@@ -1,0 +1,89 @@
+{% extends 'app/dashboard_base.html' %}
+
+{% block title %}Estadístiques de tasques{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="section">
+        <a href="{% url 'app:task_list' %}" class="back-link">← Tornar a les tasques</a>
+        <h1 style="margin-bottom:1.25rem">Estadístiques — últims 30 dies</h1>
+
+        <div class="task-stats-legend">
+            <div class="legend-item">
+                <span class="legend-swatch" style="background: rgba(255,255,255,0.4)"></span>
+                <span>Programades</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-swatch" style="background: orange"></span>
+                <span>Completades</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-swatch" style="background: rgba(255,100,100,0.7)"></span>
+                <span>Descartades</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-swatch" style="background: rgb(166,255,243)"></span>
+                <span>Reprogramades</span>
+            </div>
+        </div>
+
+        {% with stats=chart.stats chart_height=chart.chart_height today=chart.today %}
+        <div class="task-stats-chart">
+            {% if stats %}
+            <svg
+                viewBox="0 0 {{ stats|length }} {{ chart_height }}"
+                preserveAspectRatio="none"
+                style="width:100%;height:200px;display:block"
+            >
+                {% for stat in stats %}
+                {% with x_pos=forloop.counter0 %}
+                <rect x="{{ x_pos }}.15" y="{{ chart_height }}" width="0.7" height="-{{ stat.bar_heights.scheduled }}"
+                    fill="rgba(255,255,255,0.15)"
+                    transform="scale(1,-1) translate(0,-{{ chart_height }})"/>
+                <rect x="{{ x_pos }}.15" y="0" width="0.7" height="{{ stat.bar_heights.completed }}"
+                    fill="orange" opacity="0.9"
+                    transform="translate(0,{{ chart_height }}) scale(1,-1)"/>
+                <rect x="{{ x_pos }}.15" y="{{ stat.bar_heights.completed }}" width="0.35" height="{{ stat.bar_heights.discarded }}"
+                    fill="rgba(255,100,100,0.7)"
+                    transform="translate(0,{{ chart_height }}) scale(1,-1)"/>
+                <rect x="{{ x_pos }}.5" y="{{ stat.bar_heights.completed }}" width="0.35" height="{{ stat.bar_heights.rescheduled }}"
+                    fill="rgba(166,255,243,0.8)"
+                    transform="translate(0,{{ chart_height }}) scale(1,-1)"/>
+                {% if stat.date == today %}
+                <line x1="{{ x_pos }}.5" y1="0" x2="{{ x_pos }}.5" y2="{{ chart_height }}"
+                    stroke="orange" stroke-width="0.15" stroke-dasharray="0.5,0.5" opacity="0.5"/>
+                {% endif %}
+                {% endwith %}
+                {% endfor %}
+            </svg>
+            <div class="task-stats-date-row">
+                {% for stat in stats %}
+                <div class="task-stats-date-col{% if stat.date == today %} today{% endif %}">
+                    {% if forloop.counter0|divisibleby:7 %}{{ stat.date|date:"d/m" }}{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="card-empty">Encara no hi ha dades.</p>
+            {% endif %}
+        </div>
+
+        <div class="dashboard-grid" style="margin-top:2rem">
+            {% for stat in stats %}
+            {% if stat.scheduled > 0 or stat.date == today %}
+            <div class="dashboard-card" style="padding:1rem">
+                <div style="font-size:0.8rem;opacity:0.6">{{ stat.date|date:"d/m/Y" }}{% if stat.date == today %} <strong>avui</strong>{% endif %}</div>
+                <div style="display:flex;gap:1rem;margin-top:0.5rem;flex-wrap:wrap">
+                    <span>{{ stat.scheduled }} programades</span>
+                    <span style="color:orange">{{ stat.completed }} ✓</span>
+                    {% if stat.discarded %}<span style="color:rgba(255,100,100,0.9)">{{ stat.discarded }} ✗</span>{% endif %}
+                    {% if stat.rescheduled %}<span style="color:rgb(166,255,243)">{{ stat.rescheduled }} →</span>{% endif %}
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}

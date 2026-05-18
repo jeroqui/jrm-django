@@ -13,10 +13,12 @@
 @use "components/glass-card";
 @use "components/habit-calendar";
 @use "components/audio-player";
+@use "components/tasks";
 
 // Elements
 @use "elements/links";
 @use "elements/overlays";
+@use "elements/forms";
 
 // Pages
 @use "pages/home";
@@ -117,24 +119,8 @@ h2 {
   color: vars.$bg-color;
 }
 
-.bg-bg {
-  background-color: vars.$bg-color;
-}
-
-.color-bg-light {
-  color: vars.$bg-color-light;
-}
-
-.bg-bg-light {
-  background-color: vars.$bg-color-light;
-}
-
 .color-primary {
   color: vars.$primary-color;
-}
-
-.bg-primary {
-  background-color: vars.$primary-color;
 }
 
 // ==========================================================================
@@ -210,10 +196,6 @@ hr.subtitle {
 
 .hint {
   opacity: 0.5;
-}
-
-.separator {
-  margin-top: 6rem;
 }
 
 .tag {
