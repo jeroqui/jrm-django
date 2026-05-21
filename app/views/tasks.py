@@ -18,12 +18,16 @@ from app.services.tasks import (
     complete_task,
     discard_task,
     flatten_task_tree,
-    get_future_tasks,
     get_pending_past_tasks,
     get_task_stats,
     get_tasks_for_date,
+    get_tasks_for_month,
+    get_tasks_for_week,
+    make_flat_nodes,
+    month_start,
     needs_cleanup,
     reschedule_task,
+    week_monday,
 )
 
 
@@ -45,19 +49,21 @@ def task_list(request):
 
     tasks = get_tasks_for_date(user=request.user, target_date=today)
     nodes = flatten_task_tree(tasks)
+    week_nodes = make_flat_nodes(get_tasks_for_week(user=request.user, today=today))
+    month_nodes = make_flat_nodes(get_tasks_for_month(user=request.user, today=today))
     groups = list(TaskGroup.objects.filter(user=request.user))
     groups_list = [{"id": g.pk, "name": g.name, "color": g.color} for g in groups]
-    future_tasks = get_future_tasks(user=request.user, today=today)
 
     return render(
         request,
         "app/dashboard/tasks.html",
         {
             "nodes": nodes,
+            "week_nodes": week_nodes,
+            "month_nodes": month_nodes,
             "groups": groups,
             "groups_list": groups_list,
             "today": today,
-            "future_tasks": future_tasks,
         },
     )
 
@@ -285,6 +291,10 @@ def task_api_create(request):
     group_id = request.POST.get("group") or None
     parent_id = request.POST.get("parent") or None
     scheduled_date_str = request.POST.get("scheduled_date", "").strip()
+    granularity_raw = request.POST.get("granularity", "day").strip()
+
+    if granularity_raw not in ("day", "week", "month"):
+        granularity_raw = "day"
 
     today = timezone.localdate()
 
@@ -304,12 +314,17 @@ def task_api_create(request):
         except (Task.DoesNotExist, ValueError):
             pass
 
-    scheduled_date = today
-    if scheduled_date_str:
-        try:
-            scheduled_date = date_type.fromisoformat(scheduled_date_str)
-        except ValueError:
-            pass
+    if granularity_raw == "week":
+        scheduled_date = week_monday(today)
+    elif granularity_raw == "month":
+        scheduled_date = month_start(today)
+    else:
+        scheduled_date = today
+        if scheduled_date_str:
+            try:
+                scheduled_date = date_type.fromisoformat(scheduled_date_str)
+            except ValueError:
+                pass
 
     max_order = Task.objects.filter(
         user=request.user,
@@ -323,6 +338,7 @@ def task_api_create(request):
         title=title,
         group=group,
         parent=parent,
+        granularity=granularity_raw,
         scheduled_date=scheduled_date,
         order=next_order,
     )
@@ -397,7 +413,7 @@ def task_api_reschedule(request, pk):
     except ValueError:
         return JsonResponse({"ok": False, "error": "Data invàlida."})
 
-    reschedule_task(task=task, to_date=to_date)
+    reschedule_task(task=task, to_date=to_date, granularity=Task.Granularity.DAY)
     return JsonResponse({"ok": True})
 
 
@@ -444,7 +460,7 @@ def task_api_reorder(request):
     except (_json.JSONDecodeError, ValueError):
         return JsonResponse({"ok": False, "error": "Format invàlid."})
 
-    for i, item in enumerate(items):
+    for i, item in enumerate(items):  # noqa: B007
         try:
             task_id = int(item["id"])
         except (KeyError, ValueError, TypeError):
@@ -462,5 +478,38 @@ def task_api_reorder(request):
                 except (ValueError, TypeError):
                     pass
         Task.objects.filter(pk=task_id, user=request.user).update(**updates)
+
+    return JsonResponse({"ok": True})
+
+
+@login_required
+@require_POST
+def task_api_move_period(request):
+    denied = _staff_required(request)
+    if denied:
+        return JsonResponse({"ok": False, "error": "Forbidden"}, status=403)
+
+    task_id_str = request.POST.get("task_id", "").strip()
+    granularity = request.POST.get("granularity", "day").strip()
+
+    if granularity not in ("day", "week", "month"):
+        return JsonResponse({"ok": False, "error": "Granularitat invàlida."})
+
+    try:
+        task = Task.objects.get(pk=int(task_id_str), user=request.user)
+    except (Task.DoesNotExist, ValueError, TypeError):
+        return JsonResponse({"ok": False, "error": "Tasca no trobada."})
+
+    today = timezone.localdate()
+    if granularity == "week":
+        new_date = week_monday(today)
+    elif granularity == "month":
+        new_date = month_start(today)
+    else:
+        new_date = today
+
+    task.granularity = granularity
+    task.scheduled_date = new_date
+    task.save(update_fields=["granularity", "scheduled_date", "updated_at"])
 
     return JsonResponse({"ok": True})

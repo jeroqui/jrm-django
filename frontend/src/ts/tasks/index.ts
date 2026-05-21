@@ -4,6 +4,7 @@ import { initQuickAdd } from "./forms";
 import { initTaskTreeEvents } from "./events";
 import { initDragAndDrop } from "./drag-drop";
 import { markNodes } from "./dom";
+import { initNotes } from "./notes";
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
@@ -13,4 +14,5 @@ export function initTasks(): void {
   initQuickAdd();
   initTaskTreeEvents();
   initDragAndDrop();
+  initNotes();
 }

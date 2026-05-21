@@ -17,16 +17,19 @@ export function markNodes(ids: number[], status: "completed" | "discarded"): voi
   }
 }
 
-export function removeEmptyState(): void {
-  document.getElementById("task-empty-state")?.remove();
+export function removeEmptyStateIn(tree: HTMLElement): void {
+  tree.querySelector(".task-empty-state")?.remove();
 }
 
-export function insertTaskHtml(html: string, parentId: number | null): void {
+export function removeEmptyState(): void {
   const tree = document.getElementById("task-tree");
-  if (!tree) return;
-  removeEmptyState();
+  if (tree) removeEmptyStateIn(tree);
+}
 
-  if (parentId !== null) {
+export function insertTaskHtmlInTree(html: string, parentId: number | null, tree: HTMLElement): void {
+  removeEmptyStateIn(tree);
+
+  if (parentId !== null && tree.dataset.granularity === "day") {
     const allChildren = Array.from(tree.querySelectorAll<HTMLElement>(`[data-parent-id="${parentId}"]`));
     const last = allChildren[allChildren.length - 1];
     if (last) { last.insertAdjacentHTML("afterend", html); return; }
@@ -34,7 +37,13 @@ export function insertTaskHtml(html: string, parentId: number | null): void {
     if (parentNode) { parentNode.insertAdjacentHTML("afterend", html); return; }
   }
   tree.insertAdjacentHTML("beforeend", html);
-  renumberTasks(tree);
+  if (tree.dataset.granularity === "day") renumberTasks(tree);
+}
+
+export function insertTaskHtml(html: string, parentId: number | null): void {
+  const tree = document.getElementById("task-tree");
+  if (!tree) return;
+  insertTaskHtmlInTree(html, parentId, tree);
 }
 
 export function renumberTasks(tree: HTMLElement): void {

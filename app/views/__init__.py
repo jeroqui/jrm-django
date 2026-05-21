@@ -14,6 +14,7 @@ from .tasks import (
     task_api_reschedule,
     task_api_update,
     task_api_reorder,
+    task_api_move_period,
 )
 from .blog import (
     blog_detail,
@@ -85,4 +86,5 @@ __all__ = [
     "task_api_reschedule",
     "task_api_update",
     "task_api_reorder",
+    "task_api_move_period",
 ]

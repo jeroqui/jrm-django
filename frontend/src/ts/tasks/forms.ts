@@ -1,32 +1,37 @@
 import { postForm } from "../utils";
-import { insertTaskHtml, removeEmptyState } from "./dom";
+import { insertTaskHtmlInTree, removeEmptyState } from "./dom";
 
 // ─── Quick-add form ───────────────────────────────────────────────────────────
 
 export function initQuickAdd(): void {
-  const form = document.getElementById("task-quick-add") as HTMLFormElement | null;
-  if (!form) return;
+  document.querySelectorAll<HTMLFormElement>(".task-quick-add").forEach(form => {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const input = form.querySelector<HTMLInputElement>("input[name='title']");
+      if (!input?.value.trim()) { input?.focus(); return; }
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const input = form.querySelector<HTMLInputElement>("input[name='title']");
-    if (!input?.value.trim()) { input?.focus(); return; }
+      const data = new FormData(form);
+      const granularity = form.dataset.granularity ?? "day";
+      data.set("granularity", granularity);
+      if (granularity === "day") {
+        data.set("scheduled_date", form.dataset.scheduledDate ?? "");
+      }
 
-    const data = new FormData(form);
-    data.set("scheduled_date", form.dataset.scheduledDate ?? "");
+      const submitBtn = form.querySelector<HTMLButtonElement>("[type='submit']");
+      if (submitBtn) submitBtn.disabled = true;
 
-    const submitBtn = form.querySelector<HTMLButtonElement>("[type='submit']");
-    if (submitBtn) submitBtn.disabled = true;
+      const json = await postForm(form.dataset.createUrl!, data);
 
-    const json = await postForm(form.dataset.createUrl!, data);
+      if (submitBtn) submitBtn.disabled = false;
 
-    if (submitBtn) submitBtn.disabled = false;
-
-    if (json.ok) {
-      insertTaskHtml(json.html, json.parent_id);
-      input.value = "";
-      input.focus();
-    }
+      if (json.ok) {
+        const treeId = form.dataset.treeId ?? "task-tree";
+        const tree = document.getElementById(treeId);
+        if (tree) insertTaskHtmlInTree(json.html, json.parent_id, tree);
+        input.value = "";
+        input.focus();
+      }
+    });
   });
 }
 

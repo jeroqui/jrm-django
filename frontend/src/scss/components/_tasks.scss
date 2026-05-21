@@ -70,6 +70,14 @@
     }
 }
 
+// ─── Empty state ──────────────────────────────────────────────────────────────
+
+.task-empty-state {
+    color: rgba(white, 0.35);
+    font-size: 0.85rem;
+    padding: 0.5rem 0;
+}
+
 // ─── Task tree ────────────────────────────────────────────────────────────────
 
 .task-tree {
@@ -196,6 +204,25 @@
     color: var(--group-color, orange);
     white-space: nowrap;
     flex-shrink: 0;
+}
+
+// ─── Inline notes ─────────────────────────────────────────────────────────────
+
+.task-notes-area {
+    padding: 0.3rem 0.75rem 0.3rem 2.5rem;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+.task-notes-input {
+    width: 100%;
+    resize: vertical;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+    min-height: 3rem;
+    color: rgba(white, 0.7);
 }
 
 // ─── Cleanup page ─────────────────────────────────────────────────────────────

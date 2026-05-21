@@ -17,14 +17,34 @@ function getDomDescendants(tree: HTMLElement, taskId: number): HTMLElement[] {
   return result;
 }
 
-export function initDragAndDrop(): void {
-  const tree = document.getElementById("task-tree");
-  if (!tree) return;
-  const reorderUrl = tree.dataset.reorderUrl ?? "";
+function getAllTrees(): HTMLElement[] {
+  return Array.from(document.querySelectorAll<HTMLElement>(".task-tree"));
+}
 
-  tree.addEventListener("mousedown", (e) => {
+function cleanDropClasses(): void {
+  getAllTrees().forEach(t => {
+    t.querySelectorAll(".drop-before, .drop-into, .drop-after").forEach(el => {
+      el.classList.remove("drop-before", "drop-into", "drop-after");
+    });
+  });
+}
+
+export function initDragAndDrop(): void {
+  const trees = getAllTrees();
+  if (!trees.length) return;
+
+  document.addEventListener("mousedown", (e) => {
     dragAllowed = !!(e.target as HTMLElement).closest(".task-drag-handle");
   });
+
+  for (const tree of trees) {
+    initTreeDragDrop(tree);
+  }
+}
+
+function initTreeDragDrop(tree: HTMLElement): void {
+  const isDay = tree.dataset.granularity === "day";
+  const reorderUrl = tree.dataset.reorderUrl ?? "";
 
   tree.addEventListener("dragstart", (e) => {
     if (!dragAllowed) { e.preventDefault(); return; }
@@ -36,8 +56,10 @@ export function initDragAndDrop(): void {
   });
 
   tree.addEventListener("dragend", () => {
-    tree.querySelectorAll(".dragging, .drop-before, .drop-into, .drop-after").forEach(el => {
-      el.classList.remove("dragging", "drop-before", "drop-into", "drop-after");
+    getAllTrees().forEach(t => {
+      t.querySelectorAll(".dragging, .drop-before, .drop-into, .drop-after").forEach(el => {
+        el.classList.remove("dragging", "drop-before", "drop-into", "drop-after");
+      });
     });
   });
 
@@ -46,14 +68,12 @@ export function initDragAndDrop(): void {
     e.dataTransfer!.dropEffect = "move";
     const target = (e.target as HTMLElement).closest<HTMLElement>("[data-task-id]");
     if (!target) return;
-    tree.querySelectorAll(".drop-before, .drop-into, .drop-after").forEach(el => {
-      el.classList.remove("drop-before", "drop-into", "drop-after");
-    });
+    cleanDropClasses();
     const rect = target.getBoundingClientRect();
     const relY = (e.clientY - rect.top) / rect.height;
     if (relY < 0.3) {
       target.classList.add("drop-before");
-    } else if (relY < 0.7) {
+    } else if (isDay && relY < 0.7) {
       target.classList.add("drop-into");
     } else {
       target.classList.add("drop-after");
@@ -71,61 +91,88 @@ export function initDragAndDrop(): void {
   tree.addEventListener("drop", async (e) => {
     e.preventDefault();
     const droppedId = Number(e.dataTransfer!.getData("text/plain"));
+    if (!droppedId) return;
+
+    const trees = getAllTrees();
+    cleanDropClasses();
+
     const target = (e.target as HTMLElement).closest<HTMLElement>("[data-task-id]");
-    if (!target || Number(target.dataset.taskId) === droppedId) return;
+    if (target && Number(target.dataset.taskId) === droppedId) return;
 
-    const draggedEl = tree.querySelector<HTMLElement>(`[data-task-id="${droppedId}"]`);
-    if (!draggedEl) return;
+    // Find dragged element and its source tree
+    let draggedEl: HTMLElement | null = null;
+    let fromTree: HTMLElement | null = null;
+    for (const t of trees) {
+      const el = t.querySelector<HTMLElement>(`[data-task-id="${droppedId}"]`);
+      if (el) { draggedEl = el; fromTree = t; break; }
+    }
+    if (!draggedEl || !fromTree) return;
 
-    const isBefore = target.classList.contains("drop-before");
-    const isInto  = target.classList.contains("drop-into");
+    if (fromTree !== tree) {
+      // Cross-container: change granularity
+      const targetGranularity = tree.dataset.granularity ?? "day";
+      const movePeriodUrl = tree.dataset.movePeriodUrl ?? "";
+      if (!movePeriodUrl) return;
 
-    // drop-into  → dragged task becomes a child of target
-    // drop-before/after → dragged task becomes a sibling of target (same parent)
+      const json = await postForm(movePeriodUrl, new URLSearchParams({
+        task_id: String(droppedId),
+        granularity: targetGranularity,
+      }));
+
+      if (json.ok) {
+        draggedEl.dataset.granularity = targetGranularity;
+        // Reset nesting when leaving the day list
+        if (targetGranularity !== "day") {
+          draggedEl.style.paddingLeft = "0";
+          draggedEl.dataset.parentId = "";
+          draggedEl.querySelector(".task-order-num")?.remove();
+        }
+        if (target) {
+          tree.insertBefore(draggedEl, target.nextSibling);
+        } else {
+          tree.appendChild(draggedEl);
+        }
+        renumberTasks(fromTree);
+      }
+      return;
+    }
+
+    // Same-container reorder (existing logic)
+    const isBefore = target?.classList.contains("drop-before");
+    const isInto  = target?.classList.contains("drop-into");
+
     const newParentId: string = isInto
-      ? (target.dataset.taskId ?? "")
-      : (target.dataset.parentId ?? "");
+      ? (target!.dataset.taskId ?? "")
+      : (target?.dataset.parentId ?? "");
 
     const oldParentId = draggedEl.dataset.parentId ?? "";
     const parentChanged = newParentId !== oldParentId;
 
-    // Depth is encoded in the existing inline padding-left (depth * 1.5rem)
     const oldDepth   = Math.round((parseFloat(draggedEl.style.paddingLeft) || 0) / 1.5);
-    const targetDepth = Math.round((parseFloat(target.style.paddingLeft) || 0) / 1.5);
+    const targetDepth = target ? Math.round((parseFloat(target.style.paddingLeft) || 0) / 1.5) : 0;
     const newDepth   = isInto ? targetDepth + 1 : targetDepth;
     const depthDelta = newDepth - oldDepth;
 
-    // Compute descendants before any DOM mutation
     const descendants = getDomDescendants(tree, droppedId);
 
-    // Guard: cannot drop a task onto one of its own descendants
+    // Guard: cannot drop onto own descendant
     const descendantIds = new Set(descendants.map(el => Number(el.dataset.taskId)));
-    if (descendantIds.has(Number(target.dataset.taskId))) {
-      tree.querySelectorAll(".dragging, .drop-before, .drop-into, .drop-after").forEach(el => {
-        el.classList.remove("dragging", "drop-before", "drop-into", "drop-after");
-      });
-      return;
-    }
+    if (target && descendantIds.has(Number(target.dataset.taskId))) return;
 
-    // Move dragged element (and its descendants) to the new position
     const moveGroup = [draggedEl, ...descendants];
     const fragment = document.createDocumentFragment();
     moveGroup.forEach(el => fragment.appendChild(el));
 
-    if (isBefore) {
+    if (!target) {
+      tree.appendChild(fragment);
+    } else if (isBefore) {
       tree.insertBefore(fragment, target);
     } else {
-      // drop-after and drop-into both insert after the target's last descendant
       const targetDesc = getDomDescendants(tree, Number(target.dataset.taskId));
       const anchor = targetDesc.length ? targetDesc[targetDesc.length - 1] : target;
       tree.insertBefore(fragment, anchor.nextSibling);
     }
 
-    tree.querySelectorAll(".dragging, .drop-before, .drop-into, .drop-after").forEach(el => {
-      el.classList.remove("dragging", "drop-before", "drop-into", "drop-after");
-    });
-
-    // Update parent attribute and visual indentation when the parent changed
     if (parentChanged || depthDelta !== 0) {
       draggedEl.dataset.parentId = newParentId;
       draggedEl.style.paddingLeft = `${Math.max(0, newDepth * 1.5)}rem`;
@@ -135,7 +182,6 @@ export function initDragAndDrop(): void {
         d.style.paddingLeft = `${Math.max(0, dp + depthDelta * 1.5)}rem`;
       });
 
-      // Add order-num span when becoming a root task; remove it when becoming a subtask
       const numEl = draggedEl.querySelector<HTMLElement>(".task-order-num");
       if (!newParentId && !numEl) {
         const span = document.createElement("span");
@@ -149,7 +195,6 @@ export function initDragAndDrop(): void {
 
     renumberTasks(tree);
 
-    // Send updated order and, if changed, the new parent to the server
     const items = Array.from(tree.querySelectorAll<HTMLElement>("[data-task-id]")).map((el, i) => {
       const item: Record<string, unknown> = { id: Number(el.dataset.taskId), order: i };
       if (el === draggedEl && parentChanged) {

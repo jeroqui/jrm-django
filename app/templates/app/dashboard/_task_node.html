@@ -3,6 +3,7 @@
      data-parent-id="{{ node.task.parent_id|default:'' }}"
      data-notes="{{ node.task.notes|escapejs }}"
      data-group-id="{{ node.task.group_id|default:'' }}"
+     data-granularity="{{ node.task.granularity }}"
      data-order="{{ node.task.order }}"
      data-complete-url="{% url 'app:task_api_complete' node.task.pk %}"
      data-discard-url="{% url 'app:task_api_discard' node.task.pk %}"
@@ -32,6 +33,7 @@
         {% endif %}
         {% if node.task.status == 'pending' %}
         <div class="task-actions">
+            {% if node.task.granularity == 'day' %}
             <button
                 type="button"
                 class="btn-link btn-small btn-secondary js-add-subtask"
@@ -39,6 +41,12 @@
                 data-date="{{ node.task.scheduled_date|date:'Y-m-d' }}"
                 title="Afegir subtasca"
             >+</button>
+            {% endif %}
+            <button
+                type="button"
+                class="btn-link btn-small btn-secondary js-notes-toggle"
+                title="Notes"
+            >✎</button>
             <button
                 type="button"
                 class="btn-link btn-small btn-secondary js-edit-trigger"
@@ -47,5 +55,12 @@
             >···</button>
         </div>
         {% endif %}
+    </div>
+    <div class="task-notes-area"{% if not node.task.notes %} hidden{% endif %}>
+        <textarea
+            class="form-input task-notes-input"
+            rows="2"
+            placeholder="Afegeix una nota…"
+        >{{ node.task.notes }}</textarea>
     </div>
 </div>

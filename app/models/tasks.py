@@ -32,6 +32,11 @@ class Task(models.Model):
         COMPLETED = "completed", "Completada"
         DISCARDED = "discarded", "Descartada"
 
+    class Granularity(models.TextChoices):
+        DAY = "day", "Dia"
+        WEEK = "week", "Setmana"
+        MONTH = "month", "Mes"
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -59,6 +64,11 @@ class Task(models.Model):
         default=Status.PENDING,
     )
     discard_reason = models.TextField(blank=True)
+    granularity = models.CharField(
+        max_length=10,
+        choices=Granularity.choices,
+        default=Granularity.DAY,
+    )
     scheduled_date = models.DateField(default=date.today)
     order = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)

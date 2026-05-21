@@ -18,12 +18,13 @@
                     </div>
                 </div>
 
-                <!-- Quick-add form -->
                 <form
                     class="task-quick-add"
                     id="task-quick-add"
                     data-create-url="{% url 'app:task_api_create' %}"
                     data-scheduled-date="{{ today|date:'Y-m-d' }}"
+                    data-granularity="day"
+                    data-tree-id="task-tree"
                 >
                     {% csrf_token %}
                     <input
@@ -45,15 +46,16 @@
                     <button type="submit" class="btn-link task-quick-submit" title="Afegir tasca">+</button>
                 </form>
 
-                <!-- Task tree -->
                 <div class="task-tree" id="task-tree"
-                     data-reorder-url="{% url 'app:task_api_reorder' %}">
+                     data-reorder-url="{% url 'app:task_api_reorder' %}"
+                     data-granularity="day"
+                     data-move-period-url="{% url 'app:task_api_move_period' %}">
                     {% if nodes %}
                         {% for node in nodes %}
                         {% include 'app/dashboard/_task_node.html' with node=node %}
                         {% endfor %}
                     {% else %}
-                    <div class="card-empty" id="task-empty-state">
+                    <div class="task-empty-state">
                         <p>Cap tasca per avui. Afegeix-ne una!</p>
                     </div>
                     {% endif %}
@@ -62,36 +64,109 @@
         </div>
     </div>
 
-    {% if future_tasks %}
-    <div class="section future-tasks-section">
-        <details class="future-tasks-details">
-            <summary class="future-tasks-summary">Pròximes tasques</summary>
-            <div class="future-tasks-body">
-                {% for group in future_tasks %}
-                <div class="future-date-group">
-                    <h3 class="future-date-heading">{{ group.date|date:"l, d/m/Y" }}</h3>
-                    <ul class="future-task-list">
-                        {% for task in group.tasks %}
-                        <li class="future-task-item">
-                            <span class="future-task-title">{{ task.title }}</span>
-                            {% if task.group %}
-                            <span class="task-group-badge" style="--group-color: {{ task.group.color }}">{{ task.group.name }}</span>
-                            {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
+    <div class="section">
+        <div class="dashboard-grid tasks-grid">
+            <div class="dashboard-card tasks-card">
+                <div class="card-header">
+                    <h2>Aquesta setmana</h2>
                 </div>
-                {% endfor %}
+
+                <form
+                    class="task-quick-add"
+                    data-create-url="{% url 'app:task_api_create' %}"
+                    data-granularity="week"
+                    data-tree-id="task-tree-week"
+                >
+                    {% csrf_token %}
+                    <input
+                        type="text"
+                        name="title"
+                        class="form-input task-quick-input"
+                        placeholder="Nova tasca per aquesta setmana…"
+                        autocomplete="off"
+                    >
+                    {% if groups %}
+                    <select name="group" class="form-input task-quick-group">
+                        <option value="">Sense grup</option>
+                        {% for group in groups %}
+                        <option value="{{ group.pk }}" data-color="{{ group.color }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                    <button type="submit" class="btn-link task-quick-submit" title="Afegir tasca">+</button>
+                </form>
+
+                <div class="task-tree" id="task-tree-week"
+                     data-reorder-url="{% url 'app:task_api_reorder' %}"
+                     data-granularity="week"
+                     data-move-period-url="{% url 'app:task_api_move_period' %}">
+                    {% if week_nodes %}
+                        {% for node in week_nodes %}
+                        {% include 'app/dashboard/_task_node.html' with node=node %}
+                        {% endfor %}
+                    {% else %}
+                    <div class="task-empty-state">
+                        <p>Cap tasca per aquesta setmana.</p>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-        </details>
+        </div>
     </div>
-    {% endif %}
+
+    <div class="section">
+        <div class="dashboard-grid tasks-grid">
+            <div class="dashboard-card tasks-card">
+                <div class="card-header">
+                    <h2>Aquest mes</h2>
+                </div>
+
+                <form
+                    class="task-quick-add"
+                    data-create-url="{% url 'app:task_api_create' %}"
+                    data-granularity="month"
+                    data-tree-id="task-tree-month"
+                >
+                    {% csrf_token %}
+                    <input
+                        type="text"
+                        name="title"
+                        class="form-input task-quick-input"
+                        placeholder="Nova tasca per aquest mes…"
+                        autocomplete="off"
+                    >
+                    {% if groups %}
+                    <select name="group" class="form-input task-quick-group">
+                        <option value="">Sense grup</option>
+                        {% for group in groups %}
+                        <option value="{{ group.pk }}" data-color="{{ group.color }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                    <button type="submit" class="btn-link task-quick-submit" title="Afegir tasca">+</button>
+                </form>
+
+                <div class="task-tree" id="task-tree-month"
+                     data-reorder-url="{% url 'app:task_api_reorder' %}"
+                     data-granularity="month"
+                     data-move-period-url="{% url 'app:task_api_move_period' %}">
+                    {% if month_nodes %}
+                        {% for node in month_nodes %}
+                        {% include 'app/dashboard/_task_node.html' with node=node %}
+                        {% endfor %}
+                    {% else %}
+                    <div class="task-empty-state">
+                        <p>Cap tasca per aquest mes.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Group data for JS popover (json_script escapes safely for raw-text script tags) -->
 {{ groups_list|json_script:"task-groups-data" }}
 
-<!-- Task options popover -->
 <div class="task-popover" id="task-popover" hidden>
     <div class="popover-box" id="popover-box">
         <div class="popover-section">
@@ -108,7 +183,6 @@
     </div>
 </div>
 
-<!-- Discard modal -->
 <div class="task-discard-modal" id="task-discard-modal" hidden>
     <div class="modal-backdrop" id="modal-backdrop"></div>
     <div class="modal-box">

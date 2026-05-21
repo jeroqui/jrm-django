@@ -38,12 +38,21 @@ class FlatTaskNode:
     order_num: int = 0  # 1-based position among root tasks; 0 for subtasks
 
 
+def week_monday(d: date) -> date:
+    return d - timedelta(days=d.weekday())
+
+
+def month_start(d: date) -> date:
+    return d.replace(day=1)
+
+
 def needs_cleanup(*, user, today: Optional[date] = None) -> bool:
     if today is None:
         today = timezone.localdate()
     return Task.objects.filter(
         user=user,
         status=Task.Status.PENDING,
+        granularity=Task.Granularity.DAY,
         scheduled_date__lt=today,
     ).exists()
 
@@ -55,6 +64,7 @@ def get_pending_past_tasks(*, user, today: Optional[date] = None) -> list[Task]:
         Task.objects.filter(
             user=user,
             status=Task.Status.PENDING,
+            granularity=Task.Granularity.DAY,
             scheduled_date__lt=today,
         )
         .select_related("group", "parent")
@@ -82,20 +92,52 @@ def discard_task(*, task: Task, reason: str) -> None:
 
 
 @transaction.atomic
-def reschedule_task(*, task: Task, to_date: date) -> TaskReschedule:
+def reschedule_task(*, task: Task, to_date: date, granularity: Optional[str] = None) -> TaskReschedule:
     from_date = task.scheduled_date
     task.scheduled_date = to_date
-    task.save(update_fields=["scheduled_date", "updated_at"])
+    update_fields = ["scheduled_date", "updated_at"]
+    if granularity is not None:
+        task.granularity = granularity
+        update_fields.append("granularity")
+    task.save(update_fields=update_fields)
     return TaskReschedule.objects.create(task=task, from_date=from_date, to_date=to_date)
 
 
 def get_tasks_for_date(*, user, target_date: date) -> list[Task]:
     return list(
-        Task.objects.filter(user=user, scheduled_date=target_date)
+        Task.objects.filter(user=user, scheduled_date=target_date, granularity=Task.Granularity.DAY)
         .select_related("group", "parent")
         .prefetch_related("subtasks__group")
         .order_by("order", "title")
     )
+
+
+def get_tasks_for_week(*, user, today: date) -> list[Task]:
+    return list(
+        Task.objects.filter(
+            user=user,
+            granularity=Task.Granularity.WEEK,
+            scheduled_date=week_monday(today),
+        )
+        .select_related("group")
+        .order_by("order", "title")
+    )
+
+
+def get_tasks_for_month(*, user, today: date) -> list[Task]:
+    return list(
+        Task.objects.filter(
+            user=user,
+            granularity=Task.Granularity.MONTH,
+            scheduled_date=month_start(today),
+        )
+        .select_related("group")
+        .order_by("order", "title")
+    )
+
+
+def make_flat_nodes(tasks: list[Task]) -> list[FlatTaskNode]:
+    return [FlatTaskNode(task=t, depth=0, indent_rem=0, order_num=0) for t in tasks]
 
 
 def flatten_task_tree(tasks: list[Task]) -> list[FlatTaskNode]:

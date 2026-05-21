@@ -148,7 +148,7 @@ class TaskGroupForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ["title", "notes", "group", "parent", "scheduled_date"]
+        fields = ["title", "notes", "group", "parent", "granularity", "scheduled_date"]
         widgets = {
             "title": forms.TextInput(
                 attrs={"class": "form-input", "placeholder": "Títol de la tasca"}
@@ -158,6 +158,7 @@ class TaskForm(forms.ModelForm):
             ),
             "group": forms.Select(attrs={"class": "form-input"}),
             "parent": forms.Select(attrs={"class": "form-input"}),
+            "granularity": forms.Select(attrs={"class": "form-input"}),
             "scheduled_date": forms.DateInput(
                 attrs={"class": "form-input", "type": "date"}
             ),
@@ -167,6 +168,7 @@ class TaskForm(forms.ModelForm):
             "notes": "Notes",
             "group": "Grup",
             "parent": "Tasca pare",
+            "granularity": "Programació",
             "scheduled_date": "Data programada",
         }
 
@@ -179,5 +181,10 @@ class TaskForm(forms.ModelForm):
             ).exclude(pk=self.instance.pk if self.instance.pk else None)
         self.fields["group"].required = False
         self.fields["parent"].required = False
+        self.fields["granularity"].required = False
+        self.fields["granularity"].initial = "day"
+
+    def clean_granularity(self):
+        return self.cleaned_data.get("granularity") or "day"
 
 

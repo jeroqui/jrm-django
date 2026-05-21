@@ -55,6 +55,7 @@ urlpatterns = [
     path("dashboard/task-groups/<int:pk>/delete/", views.task_group_delete, name="task_group_delete"),
     path("dashboard/tasks/api/create/", views.task_api_create, name="task_api_create"),
     path("dashboard/tasks/api/reorder/", views.task_api_reorder, name="task_api_reorder"),
+    path("dashboard/tasks/api/move-period/", views.task_api_move_period, name="task_api_move_period"),
     path("dashboard/tasks/<int:pk>/api/complete/", views.task_api_complete, name="task_api_complete"),
     path("dashboard/tasks/<int:pk>/api/discard/", views.task_api_discard, name="task_api_discard"),
     path("dashboard/tasks/<int:pk>/api/reschedule/", views.task_api_reschedule, name="task_api_reschedule"),
